@@ -1,0 +1,32 @@
+[
+  {
+    "id": "APP-001",
+    "customerName": "Budi Santoso",
+    "productType": "Funding",
+    "amount": 50000000,
+    "date": "2025-06-20",
+    "status": "Pending",
+    "sales": "Sales A",
+    "coordinator": "Koordinator X"
+  },
+  {
+    "id": "APP-002",
+    "customerName": "Siti Aminah",
+    "productType": "Lending",
+    "amount": 75000000,
+    "date": "2025-06-18",
+    "status": "Approved",
+    "sales": "Sales B",
+    "coordinator": "Koordinator Y"
+  },
+  {
+    "id": "APP-003",
+    "customerName": "Andi Wijaya",
+    "productType": "Lending",
+    "amount": 100000000,
+    "date": "2025-06-15",
+    "status": "Rejected",
+    "sales": "Sales C",
+    "coordinator": "Koordinator X"
+  }
+]
