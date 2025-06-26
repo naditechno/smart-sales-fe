@@ -1,52 +1,24 @@
-import type { Metadata } from "next";
-import "../globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ActiveThemeProvider } from "@/components/active-theme";
-import { cookies } from "next/headers";
-import { cn } from "@/lib/utils";
-import { fontVariables } from "@/lib/fonts";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-export const META_THEME_COLORS = {
-  light: "#ffffff",
-  dark: "#09090b",
-};
-
-export const metadata: Metadata = {
-  title: "Smart Sales",
-  description:
-    "Solusi cerdas untuk mempermudah manajemen dan pemantauan penjualan secara efisien.",
-  icons: {
-    icon: "/logo-smart-sales.png",
-  }
-};
-
-export default async function RootLayout({
+export default function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>): Promise<React.ReactElement> {
-  const cookieStore = await cookies();
-  const activeThemeValue = cookieStore.get("active_theme")?.value;
-  const isScaled = activeThemeValue?.endsWith("-scaled");
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          "bg-background overscroll-none font-sans antialiased",
-          activeThemeValue ? `theme-${activeThemeValue}` : "",
-          isScaled ? "theme-scaled" : "",
-          fontVariables
-        )}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ActiveThemeProvider>{children}</ActiveThemeProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
