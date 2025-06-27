@@ -1,26 +1,35 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-// Simulasikan pengambilan info dari cookie/session
-function getUserRole(req: NextRequest): string | null {
-  return req.cookies.get("role")?.value || null;
-}
-
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
+
   if (pathname === "/") {
-    const role = getUserRole(req);
-    if (!role) {
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
-    const dest =
-      {
-        admin: "/admin/dashboard",
-        koordinator: "/koordinator/dashboard",
-        sales: "/sales/dashboard",
-      }[role] || "/unauthorized";
-    return NextResponse.redirect(new URL(dest, req.url));
+
+    const role = token.role as string;
+
+    const redirectTo = {
+      admin: "/admin/dashboard",
+      koordinator: "/koordinator/dashboard",
+      sales: "/sales/dashboard",
+    }[role];
+
+    if (redirectTo) {
+      return NextResponse.redirect(new URL(redirectTo, req.url));
+    }
+
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
+
   return NextResponse.next();
 }
 

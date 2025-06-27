@@ -5,6 +5,7 @@ import { ActiveThemeProvider } from "@/components/active-theme";
 import { cookies } from "next/headers";
 import { cn } from "@/lib/utils";
 import { fontVariables } from "@/lib/fonts";
+import ReduxProvider from "@/providers/redux";
 
 export const META_THEME_COLORS = {
   light: "#ffffff",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     "Solusi cerdas untuk mempermudah manajemen dan pemantauan penjualan secara efisien.",
   icons: {
     icon: "/logo-smart-sales.png",
-  }
+  },
 };
 
 export default async function RootLayout({
@@ -38,14 +39,16 @@ export default async function RootLayout({
           fontVariables
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ActiveThemeProvider>{children}</ActiveThemeProvider>
-        </ThemeProvider>
+        <ReduxProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ActiveThemeProvider>{children}</ActiveThemeProvider>
+          </ThemeProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
