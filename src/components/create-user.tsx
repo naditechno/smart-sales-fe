@@ -1,25 +1,42 @@
 "use client";
-import { useState } from "react";
-import { useDeleteUserMutation, useGetRolesQuery, useGetUsersQuery } from "@/services/users.service";
+import { useEffect, useState } from "react";
+import {
+  useDeleteUserMutation,
+  useGetRolesQuery,
+  useGetUsersQuery,
+} from "@/services/users.service";
 import FormCreateUser from "@/components/formModal/form-create-user";
 import useModal from "@/hooks/use-modal";
 
 export default function CreateUser() {
-  const { data: result, isLoading, isError, refetch } = useGetUsersQuery();
-  const users = Array.isArray(result?.data) ? result.data : [];
-  const { data: roles = [] } = useGetRolesQuery();
-  const [deleteUser] = useDeleteUserMutation();
-
+  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [editingUser, setEditingUser] = useState(null);
-  const usersPerPage = 10;
+  const [usersPerPage] = useState(10);
+
+  const {
+    data: result,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetUsersQuery({ page: currentPage, paginate: usersPerPage });
+
+  const { data: roles = [] } = useGetRolesQuery();
+  const [deleteUser] = useDeleteUserMutation();
 
   const { isOpen, openModal, closeModal } = useModal();
 
-  const filteredUsers = users.filter((u) => {
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    if (result?.data?.data) {
+      setAllUsers(result.data.data);
+    }
+  }, [result]);
+
+  const filteredUsers = allUsers.filter((u) => {
     const matchSearch =
       (u.name?.toLowerCase() || "").includes(search.toLowerCase()) ||
       (u.email?.toLowerCase() || "").includes(search.toLowerCase());
@@ -34,8 +51,10 @@ export default function CreateUser() {
     return matchSearch && matchStatus && matchRole;
   });
 
+  const totalPages = result?.data?.last_page || 1;
+
   const handleEdit = (user) => {
-    setEditingUser(user); 
+    setEditingUser(user);
     openModal();
   };
 
@@ -51,12 +70,6 @@ export default function CreateUser() {
       }
     }
   };
-
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-  const paginatedUsers = filteredUsers.slice(
-    (currentPage - 1) * usersPerPage,
-    currentPage * usersPerPage
-  );
 
   return (
     <main className="p-6 w-full mx-auto">
@@ -133,7 +146,7 @@ export default function CreateUser() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {paginatedUsers.map((u) => (
+                  {filteredUsers.map((u) => (
                     <tr key={u.id}>
                       <td className="px-4 py-2">{u.name}</td>
                       <td className="px-4 py-2">{u.email}</td>

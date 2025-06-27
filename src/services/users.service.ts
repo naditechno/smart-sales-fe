@@ -26,25 +26,12 @@ export const usersApi = apiSlice.injectEndpoints({
       }) => response.data,
     }),
 
-    getUsers: builder.query<
-      Array<{
-        id: number;
-        name: string;
-        email: string;
-        phone: string;
-        role: string;
-        status: string;
-        created_at: string;
-        updated_at: string;
-      }>,
-      void
-    >({
-      query: () => ({
-        url: "/user",
+    getUsers: builder.query<any, { page: number; paginate: number }>({
+      query: ({ page, paginate }) => ({
+        url: `/user?paginate=${paginate}&page=${page}`,
         method: "GET",
       }),
-      transformResponse: (response: { code: number; data: any }) =>
-        response.data,
+      transformResponse: (response: { code: number; data: any }) => response,
     }),
 
     updateUser: builder.mutation({
