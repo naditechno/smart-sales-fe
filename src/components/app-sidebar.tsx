@@ -3,18 +3,18 @@
 import * as React from "react"
 import {
   IconCamera,
-  IconChartBar,
   IconDashboard,
   IconDatabase,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
   IconHelp,
   IconReport,
   IconSearch,
   IconSettings,
   IconUsers,
+  IconContract,
+  IconUsersGroup,
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -50,18 +50,18 @@ const data = {
       icon: IconUsers,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Manajemen Sales",
+      url: "/admin/sales-management",
+      icon: IconContract,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
+      title: "Manajemen Customer",
+      url: "/admin/cust-management",
+      icon: IconUsersGroup,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Sales Operation",
+      url: "/admin/sales-operation",
       icon: IconUsers,
     },
   ],

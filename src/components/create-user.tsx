@@ -4,17 +4,26 @@ import {
   useDeleteUserMutation,
   useGetRolesQuery,
   useGetUsersQuery,
+  useUpdateUserStatusMutation,
 } from "@/services/users.service";
 import FormCreateUser from "@/components/formModal/form-create-user";
 import useModal from "@/hooks/use-modal";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { IconDotsVertical } from "@tabler/icons-react";
+import { User } from "@/types/user"; 
 
 export default function CreateUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [searchBy] = useState("name"); // default search by name
+  const [searchBy] = useState("name");
   const [statusFilter, setStatusFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
-  const [editingUser, setEditingUser] = useState(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null); 
   const [usersPerPage] = useState(10);
 
   const {
@@ -31,17 +40,18 @@ export default function CreateUser() {
 
   const { data: roles = [] } = useGetRolesQuery();
   const [deleteUser] = useDeleteUserMutation();
+  const [updateUserStatus] = useUpdateUserStatusMutation();
   const { isOpen, openModal, closeModal } = useModal();
 
-  const users = result?.data?.data || [];
+  const users: User[] = result?.data?.data || []; 
   const totalPages = result?.data?.last_page || 1;
 
-  const handleEdit = (user) => {
+  const handleEdit = (user: User) => {
     setEditingUser(user);
     openModal();
   };
 
-  const handleDelete = async (user) => {
+  const handleDelete = async (user: User) => {
     if (confirm(`Apakah yakin ingin menghapus ${user.name}?`)) {
       try {
         await deleteUser(user.id).unwrap();
@@ -54,7 +64,24 @@ export default function CreateUser() {
     }
   };
 
-  // Reset ke halaman 1 saat search berubah
+  const toggleStatus = async (user: User) => {
+    try {
+      const payload = {
+        role_id: user.roles?.[0]?.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        status: user.status ? 0 : 1,
+      };
+      await updateUserStatus({ id: user.id, payload }).unwrap();
+      alert(`Status user ${user.name} berhasil diperbarui`);
+      refetch();
+    } catch (error) {
+      console.error("Gagal ubah status:", error);
+      alert("Gagal mengubah status");
+    }
+  };
+
   useEffect(() => {
     setCurrentPage(1);
   }, [search]);
@@ -109,7 +136,6 @@ export default function CreateUser() {
           </div>
         </div>
 
-        {/* Tabel user */}
         <div className="bg-white dark:bg-neutral-800 shadow rounded overflow-auto">
           {isLoading ? (
             <p className="text-center animate-pulse py-6">
@@ -143,7 +169,7 @@ export default function CreateUser() {
 
                       const matchRole =
                         roleFilter === "" ||
-                        (u.role?.toLowerCase() || "") ===
+                        (u.roles?.[0]?.name?.toLowerCase() || "") ===
                           roleFilter.toLowerCase();
 
                       return matchStatus && matchRole;
@@ -154,7 +180,7 @@ export default function CreateUser() {
                         <td className="px-4 py-2">{u.email}</td>
                         <td className="px-4 py-2">{u.phone}</td>
                         <td className="px-4 py-2 capitalize">
-                          {u.role || "-"}
+                          {u.roles?.[0]?.name || "-"}
                         </td>
                         <td className="px-4 py-2">
                           <span
@@ -167,7 +193,7 @@ export default function CreateUser() {
                             {u.status ? "Aktif" : "Nonaktif"}
                           </span>
                         </td>
-                        <td className="px-4 py-2 flex gap-2">
+                        <td className="px-4 py-2 flex items-center gap-2">
                           <button
                             className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                             onClick={() => handleEdit(u)}
@@ -180,6 +206,30 @@ export default function CreateUser() {
                           >
                             Delete
                           </button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700">
+                                <IconDotsVertical className="w-4 h-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {u.status ? (
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() => toggleStatus(u)}
+                                >
+                                  Nonaktifkan
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  className="text-green-600"
+                                  onClick={() => toggleStatus(u)}
+                                >
+                                  Aktifkan
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     ))}

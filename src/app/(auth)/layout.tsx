@@ -10,7 +10,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="relative min-h-screen bg-white text-black overflow-hidden">
+      <body
+        className="relative min-h-screen bg-white text-black overflow-hidden"
+        suppressHydrationWarning
+      >
         <main className="flex items-center justify-center min-h-screen">
           {children}
         </main>
