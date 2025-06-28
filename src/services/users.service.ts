@@ -26,13 +26,15 @@ export const usersApi = apiSlice.injectEndpoints({
       }) => response.data,
     }),
 
-    getUsers: builder.query<any, { page: number; paginate: number }>({
-      query: ({ page, paginate }) => ({
-        url: `/user?paginate=${paginate}&page=${page}`,
-        method: "GET",
-      }),
-      transformResponse: (response: { code: number; data: any }) => response,
-    }),
+    getUsers: builder.query<any, { page: number; paginate: number; search?: string; search_by?: string }>(
+      {
+        query: ({ page, paginate, search = "", search_by = "name" }) => ({
+          url: `/user?paginate=${paginate}&page=${page}&search=${search}&search_by=${search_by}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { code: number; data: any }) => response,
+      }
+    ),    
 
     updateUser: builder.mutation({
       query: ({ id, payload }: { id: number; payload: any }) => {
