@@ -23,7 +23,7 @@ export default function CreateUser() {
   const [searchBy] = useState("name");
   const [statusFilter, setStatusFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
-  const [editingUser, setEditingUser] = useState<User | null>(null); 
+  const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
   const [usersPerPage] = useState(10);
 
   const {
@@ -46,6 +46,11 @@ export default function CreateUser() {
   const users: User[] = result?.data?.data || []; 
   const totalPages = result?.data?.last_page || 1;
 
+  const handleAddUser = () => {
+    setEditingUser(undefined); // reset
+    openModal();
+  };
+  
   const handleEdit = (user: User) => {
     setEditingUser(user);
     openModal();
@@ -128,7 +133,7 @@ export default function CreateUser() {
             </select>
 
             <button
-              onClick={openModal}
+              onClick={handleAddUser}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white rounded-md shadow hover:bg-primary/90 transition"
             >
               Tambah Akun
@@ -268,7 +273,7 @@ export default function CreateUser() {
         <FormCreateUser
           onClose={closeModal}
           onSuccess={refetch}
-          initialData={editingUser}
+          initialData={editingUser ?? undefined}
         />
       )}
     </main>

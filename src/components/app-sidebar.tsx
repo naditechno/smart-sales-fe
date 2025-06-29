@@ -15,6 +15,7 @@ import {
   IconUsers,
   IconContract,
   IconUsersGroup,
+  IconSettingsCog,
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -41,7 +42,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/admin/dashboard",
+      url: "/admin/dashboard/superadmin",
       icon: IconDashboard,
     },
     {
@@ -63,6 +64,11 @@ const data = {
       title: "Sales Operation",
       url: "/admin/sales-operation",
       icon: IconUsers,
+    },
+    {
+      title: "Configuration System",
+      url: "/admin/config-system",
+      icon: IconSettingsCog,
     },
   ],
   navClouds: [

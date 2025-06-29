@@ -5,11 +5,12 @@ import {
   useUpdateUserMutation,
   useGetRolesQuery,
 } from "@/services/users.service";
+import { User, Role, CreateUserPayload } from "@/types/user";
 
 interface FormCreateUserProps {
   onClose: () => void;
   onSuccess: () => void;
-  initialData?: any; // data user yang akan diedit (jika ada)
+  initialData?: User; // ✅ sudah pakai User, bukan any
 }
 
 export default function FormCreateUser({
@@ -17,7 +18,7 @@ export default function FormCreateUser({
   onSuccess,
   initialData,
 }: FormCreateUserProps) {
-  const isEdit = Boolean(initialData?.id); // true jika edit
+  const isEdit = Boolean(initialData?.id);
 
   const [form, setForm] = useState({
     name: "",
@@ -35,20 +36,34 @@ export default function FormCreateUser({
   const isLoading = creating || updating;
 
   useEffect(() => {
-    if (initialData) {
+    if (isEdit && initialData) {
+      const selectedRole = roles.find(
+        (r) => r.id === initialData.role_id
+      )?.name;
+
       setForm({
         name: initialData.name || "",
         email: initialData.email || "",
         phone: initialData.phone || "",
-        role: initialData.role || "sales",
+        role: selectedRole || "sales",
+        password: "",
+        password_confirmation: "",
+      });
+    } else {
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        role: "sales",
         password: "",
         password_confirmation: "",
       });
     }
-  }, [initialData]);
+  }, [isEdit, initialData, roles]);
+  
 
   const roleNameToId: Record<string, number> = Object.fromEntries(
-    roles.map((r: any) => [r.name, r.id])
+    roles.map((r: Role) => [r.name, r.id])
   );
 
   const handleChange = (
@@ -60,21 +75,23 @@ export default function FormCreateUser({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const roleId = roleNameToId[form.role];
+    if (!roleId) {
+      alert("Peran tidak valid. Silakan pilih peran yang benar.");
+      return;
+    }
+
     try {
-      const payload = {
-        role_id: roleNameToId[form.role],
+      const payload: CreateUserPayload = {
+        role_id: roleId,
         name: form.name,
         email: form.email,
         phone: form.phone,
+        password: form.password,
+        password_confirmation: form.password_confirmation,
         status: 1,
       };
-
-      if (form.password) {
-        Object.assign(payload, {
-          password: form.password,
-          password_confirmation: form.password_confirmation,
-        });
-      }
 
       if (isEdit && initialData?.id) {
         await updateUser({
@@ -82,13 +99,18 @@ export default function FormCreateUser({
           payload,
         }).unwrap();
       } else {
-        await createUser(payload as any).unwrap();
+        await createUser(payload).unwrap();
       }
 
       onSuccess();
       onClose();
-    } catch (error: any) {
-      alert(error.data?.message || error.error || "Terjadi kesalahan");
+    } catch (error: unknown) {
+      if (typeof error === "object" && error && "data" in error) {
+        const err = error as { data?: { message?: string }; error?: string };
+        alert(err.data?.message || err.error || "Terjadi kesalahan");
+      } else {
+        alert("Terjadi kesalahan");
+      }
     }
   };
   
@@ -128,7 +150,7 @@ export default function FormCreateUser({
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-neutral-700 border-gray-300 dark:border-gray-600"
               >
-                {roles.map((r: any) => (
+                {roles.map((r: Role) => (
                   <option key={r.id} value={r.name}>
                     {r.name.charAt(0).toUpperCase() + r.name.slice(1)}
                   </option>

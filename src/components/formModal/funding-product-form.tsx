@@ -1,26 +1,15 @@
-// components/funding/FundingProductForm.tsx
 "use client";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { FundingProduct } from "@/types/sales-manage";
 
 interface FundingProductFormProps {
   form: Partial<FundingProduct>;
   setForm: (form: Partial<FundingProduct>) => void;
   onCancel: () => void;
   onSubmit: () => void;
-}
-
-export interface FundingProduct {
-  id: number;
-  name: string;
-  description: string;
-  minAmount: number;
-  maxAmount: number;
-  interestStructure: string;
-  eligibilityCriteria: string;
-  active: boolean;
 }
 
 export default function FundingProductForm({
@@ -55,36 +44,57 @@ export default function FundingProductForm({
         <div className="flex flex-col gap-y-1">
           <Label>Jumlah Minimum</Label>
           <Input
-            type="number"
-            value={form.minAmount || ""}
-            onChange={(e) => setForm({ ...form, minAmount: +e.target.value })}
+            type="text"
+            inputMode="numeric"
+            value={form.minimum_amount ?? ""}
+            onChange={(e) =>
+              setForm({ ...form, minimum_amount: +e.target.value })
+            }
           />
         </div>
         <div className="flex flex-col gap-y-1">
           <Label>Jumlah Maksimum</Label>
           <Input
-            type="number"
-            value={form.maxAmount || ""}
-            onChange={(e) => setForm({ ...form, maxAmount: +e.target.value })}
+            type="text"
+            inputMode="numeric"
+            value={form.maximum_amount ?? ""}
+            onChange={(e) =>
+              setForm({ ...form, maximum_amount: +e.target.value })
+            }
           />
         </div>
         <div className="sm:col-span-2 flex flex-col gap-y-1">
-          <Label>Struktur Suku Bunga/Biaya</Label>
+          <Label>Suku Bunga (%)</Label>
           <Input
-            value={form.interestStructure || ""}
+            type="text"
+            inputMode="decimal"
+            value={form.interest_rate ?? ""}
             onChange={(e) =>
-              setForm({ ...form, interestStructure: e.target.value })
+              setForm({ ...form, interest_rate: +e.target.value })
             }
           />
         </div>
         <div className="sm:col-span-2 flex flex-col gap-y-1">
           <Label>Kriteria Kelayakan</Label>
           <Input
-            value={form.eligibilityCriteria || ""}
+            value={form.eligibility_criteria || ""}
             onChange={(e) =>
-              setForm({ ...form, eligibilityCriteria: e.target.value })
+              setForm({ ...form, eligibility_criteria: e.target.value })
             }
           />
+        </div>
+        <div className="sm:col-span-2 flex flex-col gap-y-1">
+          <Label>Status</Label>
+          <select
+            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
+            value={form.status ? "true" : "false"}
+            onChange={(e) =>
+              setForm({ ...form, status: e.target.value === "true" })
+            }
+          >
+            <option value="true">Aktif</option>
+            <option value="false">Tidak Aktif</option>
+          </select>
         </div>
       </div>
       <div className="pt-4 flex justify-end gap-2">

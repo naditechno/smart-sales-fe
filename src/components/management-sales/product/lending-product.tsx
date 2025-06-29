@@ -11,7 +11,7 @@ import LendingProductForm, {
 } from "@/components/formModal/lending-product-form";
 
 
-export default function LendingPage() {
+export default function LendingProductPage() {
   const [products, setProducts] = useState<LendingProduct[]>([]);
   const [form, setForm] = useState<Partial<LendingProduct>>({});
   const [editingId, setEditingId] = useState<number | null>(null);
