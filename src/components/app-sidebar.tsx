@@ -51,28 +51,32 @@ const data = {
       icon: IconFileNeutral,
       children: [
         {
+          title: "Sales",
+          url: "/admin/sales-operation/sales",
+        },
+        {
           title: "Assignment",
-          url: "/admin/sales-operation",
+          url: "/admin/sales-operation/assignment",
         },
         {
           title: "Task Activity",
-          url: "/admin/task-activity",
+          url: "/admin/sales-operation/task-activity",
         },
         {
           title: "Penugasan Prospect",
-          url: "/admin/assignment-prospect",
+          url: "/admin/sales-operation/prospect-assignment",
         },
         {
           title: "Prospect Review",
-          url: "/admin/prospect-review",
+          url: "/admin/sales-operation/prospect-review",
         },
         {
           title: "Prospect Approval",
-          url: "/admin/prospect-approval",
+          url: "/admin/sales-operation/prospect-approval",
         },
         {
           title: "Rekonsiliasi",
-          url: "/admin/Rekonsiliasi",
+          url: "/admin/sales-operation/reconciliation",
         },
       ],
     },

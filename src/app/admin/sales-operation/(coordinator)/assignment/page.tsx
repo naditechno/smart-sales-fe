@@ -1,13 +1,13 @@
-import SalesOperation from "@/components/sales-operation-file/sales-operation-page";
+import AssignmentPage from "@/components/sales-operation-file/assignment-page";
 import { SiteHeader } from "@/components/site-header";
 
 export default function Page() {
   return (
     <>
-      <SiteHeader title="Sales Operation" />
+      <SiteHeader title="Assignment" />
       <div className="flex flex-1 flex-col">
         <div className="w-full">
-          <SalesOperation />
+            <AssignmentPage/>
         </div>
       </div>
     </>

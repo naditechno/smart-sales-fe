@@ -155,7 +155,7 @@ export default function CreateUser() {
               <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-100 dark:bg-neutral-700">
                   <tr>
-                    {"Nama Email Telepon Peran Status Aksi"
+                    {"ID_User Nama Email Telepon Peran Status Aksi"
                       .split(" ")
                       .map((h) => (
                         <th
@@ -183,6 +183,7 @@ export default function CreateUser() {
                     })
                     .map((u) => (
                       <tr key={u.id}>
+                        <td className="px-4 py-2">{u.id}</td>
                         <td className="px-4 py-2">{u.name}</td>
                         <td className="px-4 py-2">{u.email}</td>
                         <td className="px-4 py-2">{u.phone}</td>
