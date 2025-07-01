@@ -15,6 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow.src,
 });
 
+// Dynamic import
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
@@ -32,8 +33,22 @@ const Polyline = dynamic(
   { ssr: false }
 );
 
+// Tipe koordinat
+type LatLngTuple = [number, number];
+
+interface NewPoint {
+  lat: string;
+  lng: string;
+}
+
+interface Config {
+  maxStops: number;
+  considerTravelTime: boolean;
+  priorityAreas: string;
+}
+
 export default function RouteOptimizationSection() {
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<Config>({
     maxStops: 10,
     considerTravelTime: true,
     priorityAreas: "",
@@ -42,8 +57,8 @@ export default function RouteOptimizationSection() {
   const [showForm, setShowForm] = useState(false);
   const [showRoutes, setShowRoutes] = useState(false);
 
-  const [routeCoordinates, setRouteCoordinates] = useState<any[]>([]);
-  const [newPoint, setNewPoint] = useState({ lat: "", lng: "" });
+  const [routeCoordinates, setRouteCoordinates] = useState<LatLngTuple[]>([]);
+  const [newPoint, setNewPoint] = useState<NewPoint>({ lat: "", lng: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;

@@ -1,42 +1,42 @@
 import { SiteHeader } from "@/components/site-header";
-import { DataTable } from "@/components/data-table";
+// import { DataTable } from "@/components/data-table";
 import { SummaryCards } from "@/components/summary-cards";
-import raw from "@/json/applications.json";
-import { ChartAreaDashboard } from "@/components/chart/chart-area-dashboard";
+// import raw from "@/json/applications.json";
+// import { ChartAreaDashboard } from "@/components/chart/chart-area-dashboard";
 
-type RawApp = {
-  id: string;
-  customerName: string;
-  productType: string;
-  amount: number;
-  date: string;
-  status: string;
-  sales: string;
-  coordinator: string;
-};
+// type RawApp = {
+//   id: string;
+//   customerName: string;
+//   productType: string;
+//   amount: number;
+//   date: string;
+//   status: string;
+//   sales: string;
+//   coordinator: string;
+// };
 
-type TableRow = {
-  header: string;
-  id: number;
-  status: string;
-  target: string;
-  type: string;
-  limit: string;
-  reviewer: string;
-};
+// type TableRow = {
+//   header: string;
+//   id: number;
+//   status: string;
+//   target: string;
+//   type: string;
+//   limit: string;
+//   reviewer: string;
+// };
 
-const tableData: TableRow[] = (raw as RawApp[]).map((app, idx) => ({
-  header: `${app.customerName} (${app.productType})`,
-  id: idx + 1,
-  status: app.status,
-  target: app.date,
-  type: app.productType,
-  limit: new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(app.amount),
-  reviewer: app.coordinator,
-}));
+// const tableData: TableRow[] = (raw as RawApp[]).map((app, idx) => ({
+//   header: `${app.customerName} (${app.productType})`,
+//   id: idx + 1,
+//   status: app.status,
+//   target: app.date,
+//   type: app.productType,
+//   limit: new Intl.NumberFormat("id-ID", {
+//     style: "currency",
+//     currency: "IDR",
+//   }).format(app.amount),
+//   reviewer: app.coordinator,
+// }));
 
 export default function Page() {
   return (
@@ -48,12 +48,12 @@ export default function Page() {
             <div className="px-4 lg:px-6">
               <SummaryCards />
             </div>
-            <div className="px-4 lg:px-6">
+            {/* <div className="px-4 lg:px-6">
               <ChartAreaDashboard />
-            </div>
-            <div className="px-4 lg:px-6">
+            </div> */}
+            {/* <div className="px-4 lg:px-6">
               <DataTable data={tableData} />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
