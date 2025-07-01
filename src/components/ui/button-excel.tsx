@@ -54,7 +54,7 @@ export default function ImportExportButton({
               onExport();
             }}
           >
-            Export Excel
+            {isExporting ? "Loading..." : "Export Excel"}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

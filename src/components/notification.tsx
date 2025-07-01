@@ -46,6 +46,7 @@ export default function NotificationPage() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Notifikasi</h1>
+      <p className="text-xs text-white">* Jika belum ada button download, harap refresh halaman</p>
 
       <Card>
         <CardContent className="overflow-x-auto p-0">

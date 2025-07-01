@@ -1,6 +1,8 @@
 import { apiSlice } from "./base-query";
 import { User, CreateUserPayload, Role } from "@/types/user";
 
+type CreateRolePayload = { name: string }; 
+
 export const usersApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ 1. createUser
@@ -78,7 +80,7 @@ export const usersApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    // ✅ 6. getRoles
+    // ✅ 6. getRoles (existing)
     getRoles: builder.query<Role[], void>({
       query: () => ({
         url: "/role",
@@ -89,6 +91,67 @@ export const usersApi = apiSlice.injectEndpoints({
         message: string;
         data: { data: Role[] };
       }) => response.data.data,
+    }),
+
+    // ✅ 7. getRoleById (NEW)
+    getRoleById: builder.query<Role, number>({
+      query: (id) => ({
+        url: `/role/${id}`,
+        method: "GET",
+      }),
+      transformResponse: (response: {
+        code: number;
+        message: string;
+        data: Role;
+      }) => response.data,
+    }),
+
+    // ✅ 8. createRole (NEW)
+    createRole: builder.mutation<Role, CreateRolePayload>({
+      query: (newRole) => ({
+        url: "/role",
+        method: "POST",
+        body: newRole,
+      }),
+      transformResponse: (response: {
+        code: number;
+        message: string;
+        data: Role;
+      }) => response.data,
+    }),
+
+    // ✅ 9. updateRole (NEW)
+    updateRole: builder.mutation<
+      Role,
+      { id: number; payload: Partial<CreateRolePayload> }
+    >({
+      query: ({ id, payload }) => ({
+        url: `/role/${id}`,
+        method: "PUT",
+        body: payload,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }),
+      transformResponse: (response: {
+        code: number;
+        message: string;
+        data: Role;
+      }) => response.data,
+    }),
+
+    // ✅ 10. deleteRole (NEW)
+    deleteRole: builder.mutation<{ code: number; message: string }, number>({
+      query: (id) => ({
+        url: `/role/${id}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response: {
+        code: number;
+        message: string;
+        data: null;
+      }) => response,
     }),
   }),
   overrideExisting: false,
@@ -101,4 +164,8 @@ export const {
   useDeleteUserMutation,
   useUpdateUserStatusMutation,
   useGetRolesQuery,
+  useGetRoleByIdQuery, // NEW
+  useCreateRoleMutation, // NEW
+  useUpdateRoleMutation, // NEW
+  useDeleteRoleMutation, // NEW
 } = usersApi;

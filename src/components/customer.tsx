@@ -95,6 +95,7 @@ export default function CustomerPage() {
     setIsExporting(true);
     try {
       await exportCustomer({ status: true });
+      alert("Cek file excel di Notifikasi");
     } catch (error) {
       console.error("Gagal export:", error);
     } finally {

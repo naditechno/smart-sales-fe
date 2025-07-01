@@ -115,7 +115,7 @@ const data = {
         },
         {
           title: "Roles & Permissions",
-          url: "/admin/roles-permissions",
+          url: "/admin/users-management/roles-permissions",
         },
       ],
     },
@@ -139,7 +139,7 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/admin/setting",
       icon: IconSettings,
     },
   ],

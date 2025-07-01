@@ -10,7 +10,14 @@ import { IconBell } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
 
 export function SiteHeader({ title }: { title: string }) {
-  const { data } = useGetNotificationsQuery({ page: 1, paginate: 10 });
+  const { data } = useGetNotificationsQuery(
+    { page: 1, paginate: 10 },
+    {
+      pollingInterval: 5000, // cek update setiap 5 detik
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    }
+  );  
   const notifications = data?.data || [];
   const hasUnread = notifications.some((n) => !n.read_at);
 

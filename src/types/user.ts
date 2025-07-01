@@ -26,3 +26,11 @@ export interface Role {
   updated_at: string;
 }
 
+export interface FormCreateRoleProps {
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  initialData?: Role;
+  roleName: string;
+  setRoleName: (name: string) => void;
+  isSubmitting: boolean;
+}
