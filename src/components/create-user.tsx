@@ -15,7 +15,9 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { IconDotsVertical } from "@tabler/icons-react";
-import { User } from "@/types/user"; 
+import { User } from "@/types/user";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 
 export default function CreateUser() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,14 +45,14 @@ export default function CreateUser() {
   const [updateUserStatus] = useUpdateUserStatusMutation();
   const { isOpen, openModal, closeModal } = useModal();
 
-  const users: User[] = result?.data?.data || []; 
+  const users: User[] = result?.data?.data || [];
   const totalPages = result?.data?.last_page || 1;
 
   const handleAddUser = () => {
     setEditingUser(undefined); // reset
     openModal();
   };
-  
+
   const handleEdit = (user: User) => {
     setEditingUser(user);
     openModal();
@@ -188,29 +190,25 @@ export default function CreateUser() {
                           {u.roles?.[0]?.name || "-"}
                         </td>
                         <td className="px-4 py-2">
-                          <span
-                            className={`px-2 py-1 rounded text-sm ${
-                              u.status
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {u.status ? "Aktif" : "Nonaktif"}
-                          </span>
+                          <Badge variant={u.status ? "success" : "destructive"}>
+                            {u.status ? "Aktif" : "Tidak Aktif"}
+                          </Badge>
                         </td>
                         <td className="px-4 py-2 flex items-center gap-2">
-                          <button
-                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                          <Button
+                            variant="default"
+                            size="sm"
                             onClick={() => handleEdit(u)}
                           >
                             Edit
-                          </button>
-                          <button
-                            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
                             onClick={() => handleDelete(u)}
                           >
                             Delete
-                          </button>
+                          </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700">

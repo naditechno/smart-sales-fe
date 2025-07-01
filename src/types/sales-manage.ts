@@ -1,3 +1,27 @@
+export interface FundingProduct {
+  id: number;
+  name: string;
+  description: string;
+  minimum_amount: number;
+  maximum_amount: number;
+  interest_rate: number;
+  eligibility_criteria: string;
+  status: boolean;
+}  
+
+export interface LendingProduct {
+  id: number; 
+  name: string;
+  description: string;
+  loan_amount_min: number;
+  loan_amount_max: number;
+  interest_rate: number;
+  repayment_terms: string;
+  eligibility_criteria: string;
+  status: boolean;
+}
+
+
 export interface FundingApplication {
   id: number;
   customerName: string;
@@ -10,17 +34,6 @@ export interface FundingApplication {
   approvalDate?: string;
   disbursementDate?: string;
 }
-
-export interface FundingProduct {
-  id: number;
-  name: string;
-  description: string;
-  minimum_amount: number;
-  maximum_amount: number;
-  interest_rate: number;
-  eligibility_criteria: string;
-  status: boolean;
-}  
 
 export type LendingApplicationStatus = "Tertunda" | "Disetujui" | "Ditolak";
 

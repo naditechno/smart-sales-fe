@@ -6,42 +6,59 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import useModal from "@/hooks/use-modal";
-import LendingProductForm, {
-  LendingProduct,
-} from "@/components/formModal/lending-product-form";
-
+import LendingProductForm from "@/components/formModal/lending-product-form";
+import { LendingProduct } from "@/types/sales-manage";
+import {
+  useGetLendingProductsQuery,
+  useCreateLendingProductMutation,
+  useUpdateLendingProductMutation,
+  useDeleteLendingProductMutation,
+} from "@/services/product-services/lendingproduct.service";
 
 export default function LendingProductPage() {
-  const [products, setProducts] = useState<LendingProduct[]>([]);
   const [form, setForm] = useState<Partial<LendingProduct>>({});
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("semua");
+  const [filterStatus, setFilterStatus] = useState<"semua" | "aktif" | "tidak">(
+    "semua"
+  );
+  const [page, setPage] = useState(1);
+  const paginate = 10;
   const { isOpen, openModal, closeModal } = useModal();
 
-  const handleSubmit = () => {
-    if (editingId !== null) {
-      setProducts(
-        products.map((p) =>
-          p.id === editingId ? ({ ...p, ...form } as LendingProduct) : p
-        )
-      );
-    } else {
-      const newProduct = {
-        id: Date.now(),
-        name: form.name || "",
-        description: form.description || "",
-        loanRange: form.loanRange || "",
-        interestStructure: form.interestStructure || "",
-        paymentTerms: form.paymentTerms || "",
-        eligibilityCriteria: form.eligibilityCriteria || "",
-        active: true,
-      };
-      setProducts([newProduct, ...products]);
+  const { data, isLoading, refetch } = useGetLendingProductsQuery({
+    page,
+    paginate,
+  });
+  const [createProduct] = useCreateLendingProductMutation();
+  const [updateProduct] = useUpdateLendingProductMutation();
+  const [deleteProduct] = useDeleteLendingProductMutation();
+
+  const handleSubmit = async () => {
+    const payload = {
+      name: form.name ?? "",
+      description: form.description ?? "",
+      loan_amount_min: Number(form.loan_amount_min ?? 0),
+      loan_amount_max: Number(form.loan_amount_max ?? 0),
+      interest_rate: Number(form.interest_rate ?? 0),
+      repayment_terms: form.repayment_terms ?? "",
+      eligibility_criteria: form.eligibility_criteria ?? "",
+      status: !!form.status,
+    };
+
+    try {
+      if (editingId !== null) {
+        await updateProduct({ id: editingId, payload });
+      } else {
+        await createProduct(payload);
+      }
+      setForm({});
+      setEditingId(null);
+      closeModal();
+      refetch();
+    } catch (err) {
+      console.error("Gagal menyimpan produk:", err);
     }
-    setForm({});
-    setEditingId(null);
-    closeModal();
   };
 
   const handleEdit = (product: LendingProduct) => {
@@ -50,22 +67,33 @@ export default function LendingProductPage() {
     openModal();
   };
 
-  const handleDelete = (id: number) => {
-    setProducts(products.filter((p) => p.id !== id));
+  const handleDelete = async (id: number) => {
+    const confirmed = window.confirm("Yakin ingin menghapus produk ini?");
+    if (!confirmed) return;
+
+    try {
+      await deleteProduct(id);
+      refetch();
+    } catch (err) {
+      console.error("Gagal menghapus produk:", err);
+    }
   };
 
-  const toggleStatus = (id: number) => {
-    setProducts(
-      products.map((p) => (p.id === id ? { ...p, active: !p.active } : p))
-    );
+  const toggleStatus = async (id: number, currentStatus: boolean) => {
+    try {
+      await updateProduct({ id, payload: { status: !currentStatus } });
+      refetch();
+    } catch (err) {
+      console.error("Gagal mengubah status:", err);
+    }
   };
 
-  const filtered = products.filter((p) => {
+  const filtered = (data?.data || []).filter((p) => {
     const match = p.name.toLowerCase().includes(search.toLowerCase());
     const statusMatch =
       filterStatus === "semua" ||
-      (filterStatus === "aktif" && p.active) ||
-      (filterStatus === "tidak" && !p.active);
+      (filterStatus === "aktif" && p.status) ||
+      (filterStatus === "tidak" && !p.status);
     return match && statusMatch;
   });
 
@@ -84,7 +112,9 @@ export default function LendingProductPage() {
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e) =>
+              setFilterStatus(e.target.value as "semua" | "aktif" | "tidak")
+            }
           >
             <option value="semua">Semua Status</option>
             <option value="aktif">Aktif</option>
@@ -118,56 +148,99 @@ export default function LendingProductPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p) => (
-                <tr key={p.id} className="border-t">
-                  <td className="px-4 py-2">{p.name}</td>
-                  <td className="px-4 py-2">{p.description}</td>
-                  <td className="px-4 py-2">{p.loanRange}</td>
-                  <td className="px-4 py-2">{p.interestStructure}</td>
-                  <td className="px-4 py-2">{p.paymentTerms}</td>
-                  <td className="px-4 py-2">{p.eligibilityCriteria}</td>
-                  <td className="px-4 py-2">
-                    <Badge
-                      variant={p.active ? "success" : "destructive"}
-                      className="cursor-pointer"
-                      onClick={() => toggleStatus(p.id)}
-                    >
-                      {p.active ? "Aktif" : "Tidak Aktif"}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-2 space-x-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleEdit(p)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(p.id)}
-                    >
-                      Hapus
-                    </Button>
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="text-center p-4 animate-pulse text-muted-foreground"
+                  >
+                    Memuat data...
                   </td>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
+              ) : filtered.length === 0 ? (
                 <tr>
                   <td
                     colSpan={8}
                     className="text-center p-4 text-muted-foreground"
                   >
-                    Tidak ada produk pinjaman.
+                    Tidak ada produk yang cocok.
                   </td>
                 </tr>
+              ) : (
+                filtered.map((p) => (
+                  <tr key={p.id} className="border-t">
+                    <td className="px-4 py-2">{p.name}</td>
+                    <td className="px-4 py-2">{p.description}</td>
+                    <td className="px-4 py-2">
+                      Rp{p.loan_amount_min} - Rp{p.loan_amount_max}
+                    </td>
+                    <td className="px-4 py-2">{p.interest_rate}%</td>
+                    <td className="px-4 py-2">{p.repayment_terms}</td>
+                    <td className="px-4 py-2">{p.eligibility_criteria}</td>
+                    <td className="px-4 py-2">
+                      <Badge
+                        variant={p.status ? "success" : "destructive"}
+                        className="cursor-pointer"
+                        onClick={() => toggleStatus(p.id, p.status)}
+                      >
+                        {p.status ? "Aktif" : "Tidak Aktif"}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="flex items-center  space-x-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleEdit(p)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(p.id)}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </CardContent>
+        {/* Pagination */}
+        <div className="flex justify-between items-center p-4 bg-muted">
+          <span className="text-sm text-muted-foreground">
+            Halaman {data?.current_page} dari {data?.last_page}
+          </span>
+          <div className="space-x-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+            >
+              Sebelumnya
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                setPage((prev) =>
+                  Math.min(prev + 1, data?.last_page || prev + 1)
+                )
+              }
+              disabled={page === data?.last_page}
+            >
+              Berikutnya
+            </Button>
+          </div>
+        </div>
       </Card>
 
+      {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <LendingProductForm

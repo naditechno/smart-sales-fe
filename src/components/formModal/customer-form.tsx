@@ -3,17 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
-export interface Customer {
-  id: number;
-  name: string;
-  contactNumber: string;
-  email: string;
-  address: string;
-  dateOfBirth: string;
-  idNumber: string;
-  status: "Aktif" | "Tidak Aktif" | "Daftar Hitam";
-}
+import { Customer } from "@/types/customer";
 
 interface CustomerFormProps {
   form: Partial<Customer>;
@@ -40,23 +30,37 @@ export default function CustomerForm({
           ✕
         </Button>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-y-1">
-          <Label>Nama</Label>
+          <Label>Nama Depan</Label>
           <Input
-            value={form.name || ""}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={form.first_name || ""}
+            onChange={(e) => setForm({ ...form, first_name: e.target.value })}
+          />
+        </div>
+
+        <div className="flex flex-col gap-y-1">
+          <Label>Nama Belakang</Label>
+          <Input
+            value={form.last_name || ""}
+            onChange={(e) => setForm({ ...form, last_name: e.target.value })}
           />
         </div>
         <div className="flex flex-col gap-y-1">
-          <Label>Nomor Kontak</Label>
-          <Input
-            value={form.contactNumber || ""}
-            onChange={(e) =>
-              setForm({ ...form, contactNumber: e.target.value })
-            }
-          />
+          <label className="block text-sm font-medium">Salutation</label>
+          <select
+            value={form.salutation ?? ""}
+            onChange={(e) => setForm({ ...form, salutation: e.target.value })}
+            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
+          >
+            <option value="">Pilih</option>
+            <option value="MR">MR</option>
+            <option value="MRS">MRS</option>
+            <option value="MS">MS</option>
+          </select>
         </div>
+
         <div className="flex flex-col gap-y-1">
           <Label>Email</Label>
           <Input
@@ -65,14 +69,15 @@ export default function CustomerForm({
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
         </div>
+
         <div className="flex flex-col gap-y-1">
-          <Label>Tanggal Lahir</Label>
+          <Label>Nomor Telepon</Label>
           <Input
-            type="date"
-            value={form.dateOfBirth || ""}
-            onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+            value={form.phone || ""}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
         </div>
+
         <div className="sm:col-span-2 flex flex-col gap-y-1">
           <Label>Alamat</Label>
           <Input
@@ -80,28 +85,62 @@ export default function CustomerForm({
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
         </div>
+
         <div className="flex flex-col gap-y-1">
-          <Label>Nomor ID</Label>
+          <Label>Kode Pos</Label>
           <Input
-            value={form.idNumber || ""}
-            onChange={(e) => setForm({ ...form, idNumber: e.target.value })}
+            value={form.postal_code || ""}
+            onChange={(e) => setForm({ ...form, postal_code: e.target.value })}
           />
         </div>
+        {/* Latitude */}
+        <div className="flex flex-col gap-y-1">
+          <label className="block text-sm font-medium">Latitude</label>
+          <input
+            type="number"
+            value={form.latitude ?? ""}
+            onChange={(e) =>
+              setForm({ ...form, latitude: parseFloat(e.target.value) })
+            }
+            className="w-full border rounded-md px-3 py-2 mb-3"
+          />
+        </div>
+
+        {/* Longitude */}
+        <div className="flex flex-col gap-y-1">
+          <label className="block text-sm font-medium">Longitude</label>
+          <input
+            type="number"
+            value={form.longitude ?? ""}
+            onChange={(e) =>
+              setForm({ ...form, longitude: parseFloat(e.target.value) })
+            }
+            className="w-full border rounded-md px-3 py-2 mb-3"
+          />
+        </div>
+
         <div className="flex flex-col gap-y-1">
           <Label>Status</Label>
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={form.status || "Aktif"}
+            value={
+              form.status === true
+                ? "true"
+                : form.status === false
+                ? "false"
+                : ""
+            }
             onChange={(e) =>
-              setForm({ ...form, status: e.target.value as Customer["status"] })
+              setForm({ ...form, status: e.target.value === "true" })
             }
           >
-            <option value="Aktif">Aktif</option>
-            <option value="Tidak Aktif">Tidak Aktif</option>
-            <option value="Daftar Hitam">Daftar Hitam</option>
+            <option value="">Pilih Status</option>
+            <option value="true">Aktif</option>
+            <option value="false">Tidak Aktif</option>
           </select>
         </div>
       </div>
+
       <div className="pt-4 flex justify-end gap-2">
         <Button variant="outline" onClick={onCancel}>
           Batal

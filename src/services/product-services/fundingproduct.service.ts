@@ -1,11 +1,17 @@
-import { apiSlice } from "./base-query";
+import { apiSlice } from "../base-query";
 import { FundingProduct } from "@/types/sales-manage";
 
 export const fundingProductApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ Get all funding products
     getFundingProducts: builder.query<
-      { data: FundingProduct[]; last_page: number },
+      {
+        data: FundingProduct[];
+        current_page: number;
+        last_page: number;
+        total: number;
+        per_page: number;
+      },
       { page: number; paginate: number }
     >({
       query: ({ page, paginate }) => ({
@@ -15,8 +21,20 @@ export const fundingProductApi = apiSlice.injectEndpoints({
       transformResponse: (response: {
         code: number;
         message: string;
-        data: { data: FundingProduct[]; last_page: number };
-      }) => response.data,
+        data: {
+          data: FundingProduct[];
+          current_page: number;
+          last_page: number;
+          total: number;
+          per_page: number;
+        };
+      }) => ({
+        data: response.data.data,
+        current_page: response.data.current_page,
+        last_page: response.data.last_page,
+        total: response.data.total,
+        per_page: response.data.per_page,
+      }),
     }),
 
     // ✅ Get product by ID
@@ -92,4 +110,3 @@ export const {
   useUpdateFundingProductMutation,
   useDeleteFundingProductMutation,
 } = fundingProductApi;
-  

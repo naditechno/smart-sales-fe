@@ -14,7 +14,7 @@ import {
   useDeleteFundingProductMutation,
   useGetFundingProductsQuery,
   useUpdateFundingProductMutation,
-} from "@/services/salesmanage.service";
+} from "@/services/product-services/fundingproduct.service";
 
 export default function FundingProductPage() {
   const [newProduct, setNewProduct] = useState<Partial<FundingProduct>>({});
@@ -23,12 +23,14 @@ export default function FundingProductPage() {
   const [filterStatus, setFilterStatus] = useState<"semua" | "aktif" | "tidak">(
     "semua"
   );
+  const [page, setPage] = useState(1);
   const { isOpen, openModal, closeModal } = useModal();
 
   const { data, isLoading, refetch } = useGetFundingProductsQuery({
-    page: 1,
-    paginate: 100,
+    page,
+    paginate: 10,
   });
+
   const [createProduct] = useCreateFundingProductMutation();
   const [updateProduct] = useUpdateFundingProductMutation();
   const [deleteProduct] = useDeleteFundingProductMutation();
@@ -41,7 +43,7 @@ export default function FundingProductPage() {
       maximum_amount: Number(newProduct.maximum_amount),
       interest_rate: Number(newProduct.interest_rate),
       eligibility_criteria: newProduct.eligibility_criteria ?? "",
-      status: !!newProduct.status, 
+      status: !!newProduct.status,
     };
 
     try {
@@ -57,7 +59,7 @@ export default function FundingProductPage() {
     } catch (err) {
       console.error("Gagal simpan produk:", err);
     }
-  };   
+  };
 
   const handleEdit = (product: FundingProduct) => {
     setNewProduct({
@@ -68,12 +70,10 @@ export default function FundingProductPage() {
     setEditingProductId(product.id);
     openModal();
   };
-  
+
   const handleDelete = async (id: number) => {
-    const confirmed = window.confirm(
-      "Apakah Anda yakin ingin menghapus produk ini?"
-    );
-    if (!confirmed) return;
+    if (!window.confirm("Apakah Anda yakin ingin menghapus produk ini?"))
+      return;
 
     try {
       await deleteProduct(id);
@@ -82,29 +82,34 @@ export default function FundingProductPage() {
       console.error("Gagal hapus produk:", err);
     }
   };
-  
+
   const toggleStatus = async (id: number, currentStatus: boolean) => {
     try {
-      await updateProduct({
-        id,
-        payload: { status: !currentStatus },
-      });
+      await updateProduct({ id, payload: { status: !currentStatus } });
       refetch();
     } catch (err) {
       console.error("Gagal mengubah status produk:", err);
     }
   };
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as "semua" | "aktif" | "tidak";
+    setFilterStatus(value);
+  };
   
 
-  const filteredProducts = (data?.data || []).filter((p) => {
+  const products = data?.data || [];
+  const lastPage = data?.last_page || 1;
+  const perPage = data?.per_page || 10;
+
+  const filteredProducts = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
       filterStatus === "semua" ||
       (filterStatus === "aktif" && p.status === true) ||
       (filterStatus === "tidak" && p.status === false);
     return matchSearch && matchStatus;
-  });  
-  
+  });
 
   return (
     <div className="p-6 space-y-6">
@@ -121,14 +126,13 @@ export default function FundingProductPage() {
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
             value={filterStatus}
-            onChange={(e) =>
-              setFilterStatus(e.target.value as "semua" | "aktif" | "tidak")
-            }
+            onChange={handleStatusChange}
           >
             <option value="semua">Semua Status</option>
             <option value="aktif">Aktif</option>
             <option value="tidak">Tidak Aktif</option>
           </select>
+
           <Button
             onClick={() => {
               setNewProduct({});
@@ -146,6 +150,7 @@ export default function FundingProductPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2 font-medium">No</th>
                 <th className="px-4 py-2 font-medium">Nama</th>
                 <th className="px-4 py-2 font-medium">Deskripsi</th>
                 <th className="px-4 py-2 font-medium">Min-Max</th>
@@ -159,7 +164,7 @@ export default function FundingProductPage() {
               {isLoading ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center p-4 text-muted-foreground animate-pulse"
                   >
                     Memuat data...
@@ -168,15 +173,18 @@ export default function FundingProductPage() {
               ) : filteredProducts.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center p-4 text-muted-foreground"
                   >
                     Tidak ada produk yang cocok.
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((product) => (
+                filteredProducts.map((product, idx) => (
                   <tr key={product.id} className="border-t">
+                    <td className="px-4 py-2">
+                      {(page - 1) * perPage + idx + 1}
+                    </td>
                     <td className="px-4 py-2">{product.name}</td>
                     <td className="px-4 py-2">{product.description}</td>
                     <td className="px-4 py-2">
@@ -227,6 +235,29 @@ export default function FundingProductPage() {
             </tbody>
           </table>
         </CardContent>
+
+        {/* Pagination */}
+        <div className="p-4 flex items-center justify-between gap-2 bg-muted">
+          <div className="text-sm text-muted-foreground">
+            Halaman <strong>{page}</strong> dari <strong>{lastPage}</strong>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              Sebelumnya
+            </Button>
+            <Button
+              variant="outline"
+              disabled={page >= lastPage}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Berikutnya
+            </Button>
+          </div>
+        </div>
       </Card>
 
       {isOpen && (

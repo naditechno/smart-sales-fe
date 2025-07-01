@@ -173,7 +173,7 @@ export default function ReviewTab() {
             <thead className="bg-muted text-left">
               <tr>
                 <th className="px-4 py-2">Nama Pelanggan</th>
-                <th className="px-4 py-2">Penjualan</th>
+                <th className="px-4 py-2">Sales</th>
                 <th className="px-4 py-2">Koordinator</th>
                 <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2">Catatan</th>

@@ -44,8 +44,7 @@ export default function FundingProductForm({
         <div className="flex flex-col gap-y-1">
           <Label>Jumlah Minimum</Label>
           <Input
-            type="text"
-            inputMode="numeric"
+            type="number"
             value={form.minimum_amount ?? ""}
             onChange={(e) =>
               setForm({ ...form, minimum_amount: +e.target.value })
@@ -55,8 +54,7 @@ export default function FundingProductForm({
         <div className="flex flex-col gap-y-1">
           <Label>Jumlah Maksimum</Label>
           <Input
-            type="text"
-            inputMode="numeric"
+            type="number"
             value={form.maximum_amount ?? ""}
             onChange={(e) =>
               setForm({ ...form, maximum_amount: +e.target.value })
@@ -66,8 +64,7 @@ export default function FundingProductForm({
         <div className="sm:col-span-2 flex flex-col gap-y-1">
           <Label>Suku Bunga (%)</Label>
           <Input
-            type="text"
-            inputMode="decimal"
+            type="number"
             value={form.interest_rate ?? ""}
             onChange={(e) =>
               setForm({ ...form, interest_rate: +e.target.value })

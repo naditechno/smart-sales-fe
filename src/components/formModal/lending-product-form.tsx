@@ -1,16 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-export interface LendingProduct {
-  id: number;
-  name: string;
-  description: string;
-  loanRange: string;
-  interestStructure: string;
-  paymentTerms: string;
-  eligibilityCriteria: string;
-  active: boolean;
-}
+import { LendingProduct } from "@/types/sales-manage";
 
 interface Props {
   form: Partial<LendingProduct>;
@@ -37,6 +27,7 @@ export default function LendingProductForm({
           ✕
         </Button>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-y-1">
           <label>Nama Produk</label>
@@ -45,6 +36,7 @@ export default function LendingProductForm({
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
         </div>
+
         <div className="flex flex-col gap-y-1">
           <label>Deskripsi</label>
           <Input
@@ -52,39 +44,75 @@ export default function LendingProductForm({
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
         </div>
+
         <div className="flex flex-col gap-y-1">
-          <label>Kisaran Jumlah Pinjaman</label>
+          <label>Jumlah Pinjaman Minimum</label>
           <Input
-            value={form.loanRange || ""}
-            onChange={(e) => setForm({ ...form, loanRange: e.target.value })}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <label>Struktur Suku Bunga/Biaya</label>
-          <Input
-            value={form.interestStructure || ""}
+            type="number"
+            value={form.loan_amount_min || ""}
             onChange={(e) =>
-              setForm({ ...form, interestStructure: e.target.value })
+              setForm({ ...form, loan_amount_min: Number(e.target.value) })
             }
           />
         </div>
-        <div className="sm:col-span-2 flex flex-col gap-y-1">
-          <label>Ketentuan Pembayaran</label>
+
+        <div className="flex flex-col gap-y-1">
+          <label>Jumlah Pinjaman Maksimum</label>
           <Input
-            value={form.paymentTerms || ""}
-            onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })}
+            type="number"
+            value={form.loan_amount_max || ""}
+            onChange={(e) =>
+              setForm({ ...form, loan_amount_max: Number(e.target.value) })
+            }
           />
         </div>
+
+        <div className="flex flex-col gap-y-1">
+          <label>Suku Bunga (%)</label>
+          <Input
+            type="number"
+            value={form.interest_rate || ""}
+            onChange={(e) =>
+              setForm({ ...form, interest_rate: Number(e.target.value) })
+            }
+          />
+        </div>
+
+        <div className="flex flex-col gap-y-1">
+          <label>Ketentuan Pembayaran</label>
+          <Input
+            value={form.repayment_terms || ""}
+            onChange={(e) =>
+              setForm({ ...form, repayment_terms: e.target.value })
+            }
+          />
+        </div>
+
         <div className="sm:col-span-2 flex flex-col gap-y-1">
           <label>Kriteria Kelayakan</label>
           <Input
-            value={form.eligibilityCriteria || ""}
+            value={form.eligibility_criteria || ""}
             onChange={(e) =>
-              setForm({ ...form, eligibilityCriteria: e.target.value })
+              setForm({ ...form, eligibility_criteria: e.target.value })
             }
           />
         </div>
+
+        <div className="sm:col-span-2 flex flex-col gap-y-1">
+          <label>Status</label>
+          <select
+            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
+            value={form.status ? "1" : "0"}
+            onChange={(e) =>
+              setForm({ ...form, status: e.target.value === "1" })
+            }
+          >
+            <option value="1">Aktif</option>
+            <option value="0">Tidak Aktif</option>
+          </select>
+        </div>
       </div>
+
       <div className="pt-4 flex justify-end gap-2">
         <Button variant="outline" onClick={onCancel}>
           Batal

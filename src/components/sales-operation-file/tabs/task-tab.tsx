@@ -61,7 +61,7 @@ export default function TaskTab() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
         <Input
-          placeholder="Cari nama penjualan atau pelanggan..."
+          placeholder="Cari nama sales atau pelanggan..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/2"
@@ -85,9 +85,9 @@ export default function TaskTab() {
         <div className="border rounded-lg p-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium">Nama Penjualan</label>
+              <label className="text-sm font-medium">Nama Sales</label>
               <Input
-                placeholder="Nama Penjualan"
+                placeholder="Nama Sales"
                 value={form.salesName || ""}
                 onChange={(e) =>
                   setForm({ ...form, salesName: e.target.value })
@@ -142,7 +142,7 @@ export default function TaskTab() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
-                <th className="px-4 py-2">Nama Penjualan</th>
+                <th className="px-4 py-2">Nama Sales</th>
                 <th className="px-4 py-2">Pelanggan</th>
                 <th className="px-4 py-2">Tanggal Penugasan</th>
                 <th className="px-4 py-2">Status</th>

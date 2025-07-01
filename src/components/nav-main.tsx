@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react";
+import { IconCirclePlusFilled, IconChevronDown, IconMail, type Icon } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 export function NavMain({
   items,
@@ -20,9 +21,17 @@ export function NavMain({
     title: string;
     url: string;
     icon?: Icon;
+    children?: { title: string; url: string }[];
   }[];
 }) {
   const pathname = usePathname();
+  const [openMenus, setOpenMenus] = useState<string[]>([]);
+
+  const toggleMenu = (title: string) => {
+    setOpenMenus((prev) =>
+      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
+    );
+  };
 
   return (
     <SidebarGroup>
@@ -35,7 +44,7 @@ export function NavMain({
                 className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
               >
                 <IconCirclePlusFilled />
-                <span>Quick Create</span>
+                <span>Shortcut</span>
               </SidebarMenuButton>
               <Button
                 size="icon"
@@ -51,21 +60,66 @@ export function NavMain({
 
         <SidebarMenu>
           {items.map((item) => {
-            const isActive = pathname === item.url;
+            const isParentActive =
+              item.children?.some((child) => pathname === child.url) ||
+              pathname === item.url;
+            const isOpen = openMenus.includes(item.title);
 
             return (
-              <SidebarMenuItem key={item.title}>
-                <Link href={item.url}>
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    data-state={isActive ? "active" : undefined} // atau gunakan className
-                    className={isActive ? "bg-muted font-semibold" : ""}
-                  >
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
+              <div key={item.title}>
+                <SidebarMenuItem>
+                  {item.children ? (
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      onClick={() => toggleMenu(item.title)}
+                      className={isParentActive ? "bg-muted font-semibold" : ""}
+                    >
+                      {item.icon && <item.icon />}
+                      <span className="flex-1">{item.title}</span>
+                      <IconChevronDown
+                        className={`transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                        size={16}
+                      />
+                    </SidebarMenuButton>
+                  ) : (
+                    <Link href={item.url!}>
+                      <SidebarMenuButton
+                        tooltip={item.title}
+                        data-state={
+                          pathname === item.url ? "active" : undefined
+                        }
+                        className={
+                          pathname === item.url ? "bg-muted font-semibold" : ""
+                        }
+                      >
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  )}
+                </SidebarMenuItem>
+
+                {/* Submenu */}
+                {item.children && isOpen && (
+                  <div className="pl-6 flex flex-col gap-1 py-1">
+                    {item.children.map((child) => {
+                      const isActive = pathname === child.url;
+                      return (
+                        <Link href={child.url} key={child.title}>
+                          <SidebarMenuButton
+                            tooltip={child.title}
+                            className={isActive ? "bg-muted font-semibold" : ""}
+                          >
+                            <span>{child.title}</span>
+                          </SidebarMenuButton>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </SidebarMenu>

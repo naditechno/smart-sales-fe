@@ -2,23 +2,18 @@
 
 import * as React from "react"
 import {
-  IconCamera,
   IconDashboard,
   IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconHelp,
   IconReport,
-  IconSearch,
   IconSettings,
   IconUsers,
-  IconContract,
+  IconFileNeutral,
+  IconBuildingStore,
   IconUsersGroup,
   IconSettingsCog,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
+// import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -46,16 +41,6 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Manajemen Pengguna",
-      url: "/admin/users-management",
-      icon: IconUsers,
-    },
-    {
-      title: "Manajemen Sales",
-      url: "/admin/sales-management",
-      icon: IconContract,
-    },
-    {
       title: "Manajemen Customer",
       url: "/admin/cust-management",
       icon: IconUsersGroup,
@@ -63,60 +48,92 @@ const data = {
     {
       title: "Sales Operation",
       url: "/admin/sales-operation",
+      icon: IconFileNeutral,
+      children: [
+        {
+          title: "Assignment",
+          url: "/admin/sales-operation",
+        },
+        {
+          title: "Task Activity",
+          url: "/admin/task-activity",
+        },
+        {
+          title: "Penugasan Prospect",
+          url: "/admin/assignment-prospect",
+        },
+        {
+          title: "Prospect Review",
+          url: "/admin/prospect-review",
+        },
+        {
+          title: "Prospect Approval",
+          url: "/admin/prospect-approval",
+        },
+        {
+          title: "Rekonsiliasi",
+          url: "/admin/Rekonsiliasi",
+        },
+      ],
+    },
+    {
+      title: "Manajemen Sales",
+      url: "/admin/sales-management/funding-product",
+      icon: IconBuildingStore,
+      children: [
+        {
+          title: "Funding Product",
+          url: "/admin/sales-management/funding-product",
+        },
+        {
+          title: "Lending Product",
+          url: "/admin/sales-management/lending-product",
+        },
+        {
+          title: "Funding Transaksi",
+          url: "/admin/sales-management/funding-transaction",
+        },
+        {
+          title: "Lending Transaksi",
+          url: "/admin/sales-management/lending-transaction",
+        },
+      ],
+    },
+    {
+      title: "Reports",
+      url: "/admin/reports",
+      icon: IconReport,
+    },
+    {
+      title: "Manajemen Pengguna",
+      url: "/admin/users-management",
       icon: IconUsers,
+      children: [
+        {
+          title: "Data Pengguna",
+          url: "/admin/users-management",
+        },
+        {
+          title: "Roles & Permissions",
+          url: "/admin/roles-permissions",
+        },
+      ],
+    },
+    {
+      title: "Master",
+      url: "/admin/master",
+      icon: IconDatabase,
+      children: [
+        {
+          title: "Sales Category",
+          url: "/admin/sales-category",
+        },
+      ],
     },
     {
       title: "Configuration System",
       url: "/admin/config-system",
       icon: IconSettingsCog,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
@@ -125,35 +142,9 @@ const data = {
       url: "#",
       icon: IconSettings,
     },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
   ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
-    },
-  ],
-}
+  documents: [],
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -175,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

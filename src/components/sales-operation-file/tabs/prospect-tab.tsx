@@ -129,7 +129,7 @@ export default function ProspectTab() {
             </div>
             <div>
               <label className="block mb-1 text-sm font-medium">
-                Nama Penjualan
+                Nama Sales
               </label>
               <Input
                 value={form.sales || ""}
@@ -222,7 +222,7 @@ export default function ProspectTab() {
             <thead className="bg-muted text-left">
               <tr>
                 <th className="px-4 py-2">Nama Pelanggan</th>
-                <th className="px-4 py-2">Penjualan</th>
+                <th className="px-4 py-2">Sales</th>
                 <th className="px-4 py-2">Koordinator</th>
                 <th className="px-4 py-2">Produk</th>
                 <th className="px-4 py-2">Status</th>

@@ -6,39 +6,33 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import useModal from "@/hooks/use-modal";
-import CustomerForm from "@/components/formModal/customer-form";
-import { Customer } from "@/types/customer";
+import SalesCategoryForm from "./formModal/sales-category-form";
+import { SalesCategory } from "@/types/salescategory";
 import {
-  useGetCustomersQuery,
-  useCreateCustomerMutation,
-  useUpdateCustomerMutation,
-  useDeleteCustomerMutation,
-  useImportCustomerMutation,
-  useExportCustomerMutation,
-} from "@/services/customer.service";
-import ImportExportButton from "./ui/button-excel";
+  useGetSalesCategoriesQuery,
+  useCreateSalesCategoryMutation,
+  useUpdateSalesCategoryMutation,
+  useDeleteSalesCategoryMutation,
+} from "@/services/salescategory.service";
 
-export default function CustomerPage() {
+export default function SalesCategoryPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("semua");
-  const [form, setForm] = useState<Partial<Customer>>({});
+  const [form, setForm] = useState<Partial<SalesCategory>>({});
   const [editingId, setEditingId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
-  const [isExporting, setIsExporting] = useState(false);
   const { isOpen, openModal, closeModal } = useModal();
 
-  const { data, isLoading, refetch } = useGetCustomersQuery({
+  const { data, isLoading, refetch } = useGetSalesCategoriesQuery({
     page,
     paginate: 10,
   });
 
-  const [createCustomer] = useCreateCustomerMutation();
-  const [updateCustomer] = useUpdateCustomerMutation();
-  const [deleteCustomer] = useDeleteCustomerMutation();
-  const [importCustomer] = useImportCustomerMutation();
-  const [exportCustomer] = useExportCustomerMutation();
+  const [createSalesCategory] = useCreateSalesCategoryMutation();
+  const [updateSalesCategory] = useUpdateSalesCategoryMutation();
+  const [deleteSalesCategory] = useDeleteSalesCategoryMutation();
 
-  const customers = data?.data || [];
+  const categories = data?.data || [];
   const lastPage = data?.last_page || 1;
   const totalData = data?.total || 0;
   const perPage = data?.per_page || 10;
@@ -47,9 +41,9 @@ export default function CustomerPage() {
   const handleSubmit = async () => {
     try {
       if (editingId !== null) {
-        await updateCustomer({ id: editingId, payload: form }).unwrap();
+        await updateSalesCategory({ id: editingId, payload: form }).unwrap();
       } else {
-        await createCustomer(form).unwrap();
+        await createSalesCategory(form).unwrap();
       }
       setForm({});
       setEditingId(null);
@@ -60,78 +54,45 @@ export default function CustomerPage() {
     }
   };
 
-  const handleEdit = (c: Customer) => {
+  const handleEdit = (c: SalesCategory) => {
     setForm(c);
     setEditingId(c.id);
     openModal();
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Yakin ingin menghapus pelanggan ini?")) {
+    if (confirm("Yakin ingin menghapus kategori ini?")) {
       try {
-        await deleteCustomer(id).unwrap();
+        await deleteSalesCategory(id).unwrap();
         refetch();
       } catch (error) {
-        console.error("Gagal hapus pelanggan:", error);
+        console.error("Gagal hapus kategori:", error);
       }
     }
   };
 
-  const handleImport = async (file: File) => {
-    try {
-      await importCustomer(file).unwrap();
-      refetch();
-      alert("Import berhasil!");
-    } catch (error) {
-      console.error("Gagal import:", error);
-    }
-  };
-
-  const handleExport = async () => {
-    if (isExporting) {
-      alert("Export sedang diproses, harap tunggu...");
-      return;
-    }
-    setIsExporting(true);
-    try {
-      await exportCustomer({ status: true });
-    } catch (error) {
-      console.error("Gagal export:", error);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const filtered = customers.filter((c) => {
+  const filtered = categories.filter((c) => {
     const keyword = search.toLowerCase();
-    const matchNameOrEmail =
-      c.first_name.toLowerCase().includes(keyword) ||
-      c.email.toLowerCase().includes(keyword);
+    const matchName = c.name.toLowerCase().includes(keyword);
     const matchStatus =
       filterStatus === "semua" ||
       (filterStatus === "Aktif" && c.status === true) ||
       (filterStatus === "Tidak Aktif" && c.status === false);
-    return matchNameOrEmail && matchStatus;
+    return matchName && matchStatus;
   });
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Manajemen Pelanggan</h1>
+      <h1 className="text-2xl font-bold">Manajemen Kategori Sales</h1>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
         <Input
-          placeholder="Cari nama atau email pelanggan..."
+          placeholder="Cari nama kategori..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/2"
         />
         <div className="flex gap-2">
-          <ImportExportButton
-            onImport={handleImport}
-            onExport={handleExport}
-            isExporting={isExporting}
-          />
-
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
             value={filterStatus}
@@ -148,27 +109,20 @@ export default function CustomerPage() {
               openModal();
             }}
           >
-            + Tambah Pelanggan
+            + Tambah Kategori
           </Button>
         </div>
       </div>
 
       <Card>
         <CardContent className="overflow-x-auto p-0">
-          <div>
+          <>
             <table className="w-full text-sm" suppressHydrationWarning>
               <thead className="bg-muted text-left">
                 <tr>
                   <th className="px-4 py-2">No</th>
                   <th className="px-4 py-2">Nama</th>
-                  <th className="px-4 py-2">Salutation</th>
-                  <th className="px-4 py-2">Job Title</th>
-                  <th className="px-4 py-2">Kontak</th>
-                  <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Alamat</th>
-                  <th className="px-4 py-2">Kode Pos</th>
-                  <th className="px-4 py-2">Latitude</th>
-                  <th className="px-4 py-2">Longitude</th>
+                  <th className="px-4 py-2">Deskripsi</th>
                   <th className="px-4 py-2">Status</th>
                   <th className="px-4 py-2">Aksi</th>
                 </tr>
@@ -177,10 +131,10 @@ export default function CustomerPage() {
                 {isLoading ? (
                   <tr>
                     <td
-                      colSpan={11}
+                      colSpan={5}
                       className="text-center p-4 text-muted-foreground"
                     >
-                      Memuat data pelanggan...
+                      Memuat data kategori...
                     </td>
                   </tr>
                 ) : (
@@ -190,49 +144,38 @@ export default function CustomerPage() {
                         <td className="px-4 py-2">
                           {(page - 1) * 10 + index + 1}
                         </td>
-                        <td className="px-4 py-2">
-                          {c.first_name} {c.last_name}
-                        </td>
-                        <td className="px-4 py-2">{c.salutation ?? "-"}</td>
-                        <td className="px-4 py-2">{c.job_title ?? "-"}</td>
-                        <td className="px-4 py-2">{c.phone}</td>
-                        <td className="px-4 py-2">{c.email}</td>
-                        <td className="px-4 py-2">{c.address}</td>
-                        <td className="px-4 py-2">{c.postal_code ?? "-"}</td>
-                        <td className="px-4 py-2">{c.latitude ?? "-"}</td>
-                        <td className="px-4 py-2">{c.longitude ?? "-"}</td>
+                        <td className="px-4 py-2">{c.name}</td>
+                        <td className="px-4 py-2">{c.description}</td>
                         <td className="px-4 py-2">
                           <Badge variant={c.status ? "success" : "destructive"}>
                             {c.status ? "Aktif" : "Tidak Aktif"}
                           </Badge>
                         </td>
-                        <td className="px-4 py-2">
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={() => handleEdit(c)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleDelete(c.id)}
-                            >
-                              Hapus
-                            </Button>
-                          </div>
+                        <td className="px-4 py-2 flex space-x-2">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => handleEdit(c)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(c.id)}
+                          >
+                            Hapus
+                          </Button>
                         </td>
                       </tr>
                     ))}
                     {filtered.length === 0 && (
                       <tr>
                         <td
-                          colSpan={7}
+                          colSpan={5}
                           className="text-center p-4 text-muted-foreground"
                         >
-                          Tidak ada data pelanggan.
+                          Tidak ada data kategori.
                         </td>
                       </tr>
                     )}
@@ -240,9 +183,8 @@ export default function CustomerPage() {
                 )}
               </tbody>
             </table>
-          </div>
+          </>
         </CardContent>
-        {/* PAGINATION */}
         <div className="p-4 flex items-center justify-between gap-2 bg-muted">
           <div className="text-sm text-muted-foreground">
             Halaman <strong>{page}</strong> dari <strong>{totalPages}</strong>
@@ -268,7 +210,7 @@ export default function CustomerPage() {
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <CustomerForm
+          <SalesCategoryForm
             form={form}
             setForm={setForm}
             onCancel={closeModal}
