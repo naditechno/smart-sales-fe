@@ -178,8 +178,23 @@ export default function AssignmentPage() {
                         : "-"}
                     </td>
                     <td className="px-4 py-2">
-                      {item.status === 1 ? "Aktif" : "Tidak Aktif"}
+                      {item.status === 0 && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                          Pending
+                        </span>
+                      )}
+                      {item.status === 1 && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-blue-200 text-blue-700">
+                          In Progress
+                        </span>
+                      )}
+                      {item.status === 2 && (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-green-200 text-green-700">
+                          Completed
+                        </span>
+                      )}
                     </td>
+
                     <td className="px-4 py-2 space-x-2">
                       <Button
                         size="sm"

@@ -77,7 +77,7 @@ export default function AssignmentForm({
             }
           />
         </div>
-        <div className="flex flex-col gap-y-1">
+        {/* <div className="flex flex-col gap-y-1">
           <Label>Status</Label>
           <Input
             type="number"
@@ -87,7 +87,7 @@ export default function AssignmentForm({
             }
             placeholder="0 = Tidak Aktif, 1 = Aktif"
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="pt-4 flex justify-end gap-2">
