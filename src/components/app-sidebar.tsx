@@ -59,7 +59,7 @@ const data = {
           url: "/admin/sales-operation/assignment",
         },
         {
-          title: "Task Activity",
+          title: "Task Schedule",
           url: "/admin/sales-operation/task-activity",
         },
         {

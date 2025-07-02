@@ -17,6 +17,18 @@ export default function LendingProductForm({
   onCancel,
   editingId,
 }: Props) {
+  function formatRibuan(value?: string | number): string {
+    if (!value) return "";
+    const number =
+      typeof value === "number"
+        ? value
+        : parseInt(value.replace(/\D/g, "") || "0");
+    return number.toLocaleString("id-ID");
+  }
+
+  function parseRibuanToNumber(value: string): number {
+    return parseInt(value.replace(/\D/g, "") || "0");
+  }  
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-2xl space-y-4">
       <div className="flex justify-between items-center">
@@ -48,10 +60,14 @@ export default function LendingProductForm({
         <div className="flex flex-col gap-y-1">
           <label>Jumlah Pinjaman Minimum</label>
           <Input
-            type="number"
-            value={form.loan_amount_min || ""}
+            type="text"
+            inputMode="numeric"
+            value={formatRibuan(form.loan_amount_min)}
             onChange={(e) =>
-              setForm({ ...form, loan_amount_min: Number(e.target.value) })
+              setForm({
+                ...form,
+                loan_amount_min: parseRibuanToNumber(e.target.value),
+              })
             }
           />
         </div>
@@ -59,10 +75,14 @@ export default function LendingProductForm({
         <div className="flex flex-col gap-y-1">
           <label>Jumlah Pinjaman Maksimum</label>
           <Input
-            type="number"
-            value={form.loan_amount_max || ""}
+            type="text"
+            inputMode="numeric"
+            value={formatRibuan(form.loan_amount_max)}
             onChange={(e) =>
-              setForm({ ...form, loan_amount_max: Number(e.target.value) })
+              setForm({
+                ...form,
+                loan_amount_max: parseRibuanToNumber(e.target.value),
+              })
             }
           />
         </div>
@@ -102,7 +122,7 @@ export default function LendingProductForm({
           <label>Status</label>
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={form.status ? "1" : "0"}
+            value={form.status ? "0" : "1"}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value === "1" })
             }

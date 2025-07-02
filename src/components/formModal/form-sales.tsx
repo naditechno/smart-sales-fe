@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Sales } from "@/types/sales";
+import { useState } from "react";
 
 interface SalesFormProps {
   form: Partial<Sales>;
@@ -18,7 +19,7 @@ export default function SalesForm({
   onCancel,
   onSubmit,
 }: SalesFormProps) {
-  const isEdit = !!form.sales_id;
+  const [isEdit] = useState(!!form.sales_id);
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-md space-y-4">

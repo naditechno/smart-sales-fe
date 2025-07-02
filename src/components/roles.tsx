@@ -14,9 +14,10 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { IconDotsVertical } from "@tabler/icons-react";
-import { Role } from "@/types/user"; // Pastikan tipe Role diimpor dengan benar
-import { Button } from "@/components/ui/button"; // Sesuaikan path jika berbeda
-import FormCreateRole from "@/components/formModal/form-create-role"; // Komponen modal baru
+import { Role } from "@/types/user";
+import { Button } from "@/components/ui/button"; 
+import FormCreateRole from "@/components/formModal/form-create-role"; 
+import Swal from "sweetalert2";
 
 export default function RolePage() {
   const [search, setSearch] = useState("");
@@ -56,14 +57,23 @@ export default function RolePage() {
   };
 
   const handleDelete = async (role: Role) => {
-    if (window.confirm(`Apakah yakin ingin menghapus peran ${role.name}?`)) {
+    const result = await Swal.fire({
+      title: `Hapus Peran "${role.name}"?`,
+      text: "Tindakan ini tidak dapat dibatalkan!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus",
+      cancelButtonText: "Batal",
+    });
+
+    if (result.isConfirmed) {
       try {
         await deleteRole(role.id).unwrap();
-        window.alert("Peran berhasil dihapus");
+        await Swal.fire("Berhasil", "Peran berhasil dihapus", "success");
         refetch(); // Memuat ulang data setelah penghapusan
       } catch (err) {
         console.error("Gagal menghapus peran:", err);
-        window.alert("Terjadi kesalahan saat menghapus peran");
+        Swal.fire("Gagal", "Terjadi kesalahan saat menghapus peran", "error");
       }
     }
   };
@@ -77,24 +87,24 @@ export default function RolePage() {
           id: editingRole.id,
           payload: { name: roleName },
         }).unwrap();
-        window.alert("Peran berhasil diperbarui");
+        await Swal.fire("Berhasil", "Peran berhasil diperbarui", "success");
       } else {
         // Mode tambah
         await createRole({ name: roleName }).unwrap();
-        window.alert("Peran berhasil ditambahkan");
+        await Swal.fire("Berhasil", "Peran berhasil ditambahkan", "success");
       }
-      refetch(); // Panggil refetch untuk memuat ulang data di halaman utama
-      closeModal(); // Tutup modal
+      refetch();
+      closeModal();
     } catch (error) {
       console.error("Gagal menyimpan peran:", error);
-      window.alert("Terjadi kesalahan saat menyimpan peran");
+      Swal.fire("Gagal", "Terjadi kesalahan saat menyimpan peran", "error");
     }
-  };
+  };  
 
   return (
     <main className="p-6 w-full mx-auto">
       <section className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold">Data Peran</h2>
             <p className="text-sm text-muted-foreground">
@@ -102,7 +112,7 @@ export default function RolePage() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <input
               type="text"
               placeholder="Pencarian peran..."

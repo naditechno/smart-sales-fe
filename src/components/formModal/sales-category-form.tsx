@@ -48,11 +48,11 @@ export default function SalesCategoryForm({
           />
         </div>
 
-        <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1 sm:col-span-2">
           <Label>Status</Label>
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={form.status === true ? "true" : "false"}
+            value={form.status === true ? "false" : "true"}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value === "true" })
             }

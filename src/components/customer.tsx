@@ -17,6 +17,7 @@ import {
   useExportCustomerMutation,
 } from "@/services/customer.service";
 import ImportExportButton from "./ui/button-excel";
+import Swal from "sweetalert2";
 
 export default function CustomerPage() {
   const [search, setSearch] = useState("");
@@ -67,12 +68,27 @@ export default function CustomerPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Yakin ingin menghapus pelanggan ini?")) {
+    const result = await Swal.fire({
+      title: "Hapus Pelanggan?",
+      text: "Data yang dihapus tidak dapat dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus",
+      cancelButtonText: "Batal",
+    });
+
+    if (result.isConfirmed) {
       try {
         await deleteCustomer(id).unwrap();
         refetch();
+        Swal.fire("Berhasil", "Pelanggan berhasil dihapus.", "success");
       } catch (error) {
         console.error("Gagal hapus pelanggan:", error);
+        Swal.fire(
+          "Gagal",
+          "Terjadi kesalahan saat menghapus pelanggan.",
+          "error"
+        );
       }
     }
   };
@@ -81,27 +97,34 @@ export default function CustomerPage() {
     try {
       await importCustomer(file).unwrap();
       refetch();
-      alert("Import berhasil!");
+      Swal.fire("Berhasil", "Import berhasil!", "success");
     } catch (error) {
       console.error("Gagal import:", error);
+      Swal.fire("Gagal", "Terjadi kesalahan saat import data.", "error");
     }
   };
 
   const handleExport = async () => {
     if (isExporting) {
-      alert("Export sedang diproses, harap tunggu...");
+      Swal.fire(
+        "Sedang Diproses",
+        "Export sedang diproses, harap tunggu...",
+        "info"
+      );
       return;
     }
+
     setIsExporting(true);
     try {
       await exportCustomer({ status: true });
-      alert("Cek file excel di Notifikasi");
+      Swal.fire("Berhasil", "Cek file excel di Notifikasi.", "success");
     } catch (error) {
       console.error("Gagal export:", error);
+      Swal.fire("Gagal", "Terjadi kesalahan saat export data.", "error");
     } finally {
       setIsExporting(false);
     }
-  };
+  };  
 
   const filtered = customers.filter((c) => {
     const keyword = search.toLowerCase();
@@ -119,14 +142,14 @@ export default function CustomerPage() {
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Manajemen Pelanggan</h1>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
+      <div className="flex flex-wrap items-center gap-2 justify-between">
         <Input
           placeholder="Cari nama atau email pelanggan..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/2"
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <ImportExportButton
             onImport={handleImport}
             onExport={handleExport}

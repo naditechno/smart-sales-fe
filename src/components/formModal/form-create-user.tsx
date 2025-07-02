@@ -6,6 +6,7 @@ import {
   useGetRolesQuery,
 } from "@/services/users.service";
 import { User, Role, CreateUserPayload } from "@/types/user";
+import Swal from "sweetalert2";
 
 interface FormCreateUserProps {
   onClose: () => void;
@@ -78,7 +79,11 @@ export default function FormCreateUser({
 
     const roleId = roleNameToId[form.role];
     if (!roleId) {
-      alert("Peran tidak valid. Silakan pilih peran yang benar.");
+      await Swal.fire({
+        icon: "warning",
+        title: "Peran tidak valid",
+        text: "Silakan pilih peran yang benar.",
+      });
       return;
     }
 
@@ -98,8 +103,18 @@ export default function FormCreateUser({
           id: initialData.id,
           payload,
         }).unwrap();
+        await Swal.fire(
+          "Berhasil",
+          "Data pengguna berhasil diperbarui.",
+          "success"
+        );
       } else {
         await createUser(payload).unwrap();
+        await Swal.fire(
+          "Berhasil",
+          "Data pengguna berhasil ditambahkan.",
+          "success"
+        );
       }
 
       onSuccess();
@@ -107,12 +122,16 @@ export default function FormCreateUser({
     } catch (error: unknown) {
       if (typeof error === "object" && error && "data" in error) {
         const err = error as { data?: { message?: string }; error?: string };
-        alert(err.data?.message || err.error || "Terjadi kesalahan");
+        await Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: err.data?.message || err.error || "Terjadi kesalahan",
+        });
       } else {
-        alert("Terjadi kesalahan");
+        await Swal.fire("Gagal", "Terjadi kesalahan", "error");
       }
     }
-  };
+  };  
   
 
   return (

@@ -18,6 +18,19 @@ export default function FundingProductForm({
   onCancel,
   onSubmit,
 }: FundingProductFormProps) {
+  function formatRibuan(value?: string | number): string {
+    if (!value) return "";
+    const number =
+      typeof value === "number"
+        ? value
+        : parseInt(value.replace(/\D/g, "") || "0");
+    return number.toLocaleString("id-ID");
+  }
+  
+  function parseRibuanToNumber(value: string): number {
+    return parseInt(value.replace(/\D/g, "") || "0");
+  }  
+  
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-2xl space-y-4">
       <div className="flex justify-between items-center">
@@ -44,20 +57,28 @@ export default function FundingProductForm({
         <div className="flex flex-col gap-y-1">
           <Label>Jumlah Minimum</Label>
           <Input
-            type="number"
-            value={form.minimum_amount ?? ""}
+            type="text"
+            inputMode="numeric"
+            value={formatRibuan(form.minimum_amount)}
             onChange={(e) =>
-              setForm({ ...form, minimum_amount: +e.target.value })
+              setForm({
+                ...form,
+                minimum_amount: parseRibuanToNumber(e.target.value),
+              })
             }
           />
         </div>
         <div className="flex flex-col gap-y-1">
           <Label>Jumlah Maksimum</Label>
           <Input
-            type="number"
-            value={form.maximum_amount ?? ""}
+            type="text"
+            inputMode="numeric"
+            value={formatRibuan(form.maximum_amount)}
             onChange={(e) =>
-              setForm({ ...form, maximum_amount: +e.target.value })
+              setForm({
+                ...form,
+                maximum_amount: parseRibuanToNumber(e.target.value),
+              })
             }
           />
         </div>
@@ -84,7 +105,7 @@ export default function FundingProductForm({
           <Label>Status</Label>
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={form.status ? "true" : "false"}
+            value={form.status ? "false" : "true"}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value === "true" })
             }

@@ -77,17 +77,23 @@ export default function AssignmentForm({
             }
           />
         </div>
-        {/* <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1">
           <Label>Status</Label>
-          <Input
-            type="number"
+          <select
             value={form.status ?? ""}
             onChange={(e) =>
               setForm({ ...form, status: Number(e.target.value) })
             }
-            placeholder="0 = Tidak Aktif, 1 = Aktif"
-          />
-        </div> */}
+            className="border border-input bg-background rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
+          >
+            <option value="" disabled>
+              Pilih Status
+            </option>
+            <option value={0}>Pending</option>
+            <option value={1}>In Progress</option>
+            <option value={2}>Completed</option>
+          </select>
+        </div>
       </div>
 
       <div className="pt-4 flex justify-end gap-2">

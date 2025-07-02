@@ -1,7 +1,13 @@
-export default function ProspectApprovalPage() {
+import { SiteHeader } from "@/components/site-header";
+
+export default function Page() {
   return (
-    <div>
-      <h1>Prospect Approval Page</h1>
-    </div>
+    <>
+      <SiteHeader title="Prospect Approval" />
+      <div className="flex flex-1 flex-col">
+        <div className="w-full">
+        </div>
+      </div>
+    </>
   );
 }

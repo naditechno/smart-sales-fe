@@ -172,8 +172,19 @@ export default function LendingProductPage() {
                     <td className="px-4 py-2">{p.name}</td>
                     <td className="px-4 py-2">{p.description}</td>
                     <td className="px-4 py-2">
-                      Rp{p.loan_amount_min} - Rp{p.loan_amount_max}
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                      }).format(p.loan_amount_min)}{" "}
+                      -{" "}
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                      }).format(p.loan_amount_max)}
                     </td>
+
                     <td className="px-4 py-2">{p.interest_rate}%</td>
                     <td className="px-4 py-2">{p.repayment_terms}</td>
                     <td className="px-4 py-2">{p.eligibility_criteria}</td>

@@ -101,6 +101,14 @@ export default function TaskActivityPage() {
                 <th className="px-4 py-2 font-medium">No</th>
                 <th className="px-4 py-2 font-medium">Assignment ID</th>
                 <th className="px-4 py-2 font-medium">Scheduled At</th>
+                <th className="px-4 py-2 font-medium">Customer ID</th>
+                <th className="px-4 py-2 font-medium">Nama Customer</th>
+                <th className="px-4 py-2 font-medium">Sales ID</th>
+                <th className="px-4 py-2 font-medium">Nama Sales</th>
+                <th className="px-4 py-2 font-medium">Email Sales</th>
+                <th className="px-4 py-2 font-medium">Koordinator ID</th>
+                <th className="px-4 py-2 font-medium">Nama koordinator</th>
+                <th className="px-4 py-2 font-medium">Email koordinator</th>
                 <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 font-medium">Aksi</th>
               </tr>
@@ -114,7 +122,7 @@ export default function TaskActivityPage() {
                 </tr>
               ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center p-4">
+                  <td colSpan={13} className="text-center p-4">
                     Tidak ada data.
                   </td>
                 </tr>
@@ -131,14 +139,36 @@ export default function TaskActivityPage() {
                         timeStyle: "short",
                       })}
                     </td>
+                    <td className="px-4 py-2">{item.customer_id}</td>
+                    <td className="px-4 py-2">
+                      {`${item.customer_first_name} ${item.customer_last_name}`}
+                    </td>
+                    <td className="px-4 py-2">{item.sales_id}</td>
+                    <td className="px-4 py-2">{item.sales_name}</td>
+                    <td className="px-4 py-2">{item.sales_email}</td>
+                    <td className="px-4 py-2">{item.coordinator_id}</td>
+                    <td className="px-4 py-2">{item.coordinator_name}</td>
+                    <td className="px-4 py-2">{item.coordinator_email}</td>
 
                     <td className="px-4 py-2">
-                      {item.status === 0
-                        ? "Pending"
-                        : item.status === 1
-                        ? "Visited"
-                        : "Cancelled"}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium
+                        ${
+                          item.status === 0
+                            ? "bg-gray-200 text-gray-700"
+                            : item.status === 1
+                            ? "bg-blue-200 text-blue-700"
+                            : "bg-red-200 text-red-700"
+                        }`}
+                      >
+                        {item.status === 0
+                          ? "Pending"
+                          : item.status === 1
+                          ? "Visited"
+                          : "Cancelled"}
+                      </span>
                     </td>
+
                     <td className="px-4 py-2 space-x-2">
                       <Button
                         size="sm"

@@ -134,7 +134,6 @@ export default function CustomerForm({
               setForm({ ...form, status: e.target.value === "true" })
             }
           >
-            <option value="">Pilih Status</option>
             <option value="true">Aktif</option>
             <option value="false">Tidak Aktif</option>
           </select>

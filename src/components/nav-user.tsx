@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useLogoutMutation } from "@/services/auth.service"
 import { signOut } from "next-auth/react"
+import Swal from "sweetalert2";
 
 export function NavUser({
   user,
@@ -44,14 +45,25 @@ export function NavUser({
   const [logout, { isLoading }] = useLogoutMutation();
 
   const handleLogout = async () => {
-    try {
-      await logout().unwrap(); 
-      await signOut({ callbackUrl: "/login" });
-    } catch (error) {
-      console.error("Gagal logout:", error);
-      alert("Terjadi kesalahan saat logout.");
+    const result = await Swal.fire({
+      title: "Keluar dari Aplikasi?",
+      text: "Apakah Anda yakin ingin logout?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, Logout",
+      cancelButtonText: "Batal",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await logout().unwrap();
+        await signOut({ callbackUrl: "/login" });
+      } catch (error) {
+        console.error("Gagal logout:", error);
+        Swal.fire("Gagal", "Terjadi kesalahan saat logout.", "error");
+      }
     }
-  };
+  };  
 
   return (
     <SidebarMenu>

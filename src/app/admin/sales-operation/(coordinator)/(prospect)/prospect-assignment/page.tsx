@@ -1,7 +1,15 @@
-export default function ProspectAssignmentPage() {
+import ProspectAssignmentPage from "@/components/sales-operation-file/propects/prospect-assignment-page";
+import { SiteHeader } from "@/components/site-header";
+
+export default function Page() {
   return (
-    <div>
-      <h1>Prospect Assignment Page</h1>
-    </div>
+    <>
+      <SiteHeader title="Prospect Assignment" />
+      <div className="flex flex-1 flex-col">
+        <div className="w-full">
+          <ProspectAssignmentPage/>
+        </div>
+      </div>
+    </>
   );
 }

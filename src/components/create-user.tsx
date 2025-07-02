@@ -18,6 +18,7 @@ import { IconDotsVertical } from "@tabler/icons-react";
 import { User } from "@/types/user";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import Swal from "sweetalert2";
 
 export default function CreateUser() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,35 +60,60 @@ export default function CreateUser() {
   };
 
   const handleDelete = async (user: User) => {
-    if (confirm(`Apakah yakin ingin menghapus ${user.name}?`)) {
+    const result = await Swal.fire({
+      title: `Hapus ${user.name}?`,
+      text: "Apakah Anda yakin ingin menghapus user ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus",
+      cancelButtonText: "Batal",
+    });
+
+    if (result.isConfirmed) {
       try {
         await deleteUser(user.id).unwrap();
-        alert("User berhasil dihapus");
+        Swal.fire("Berhasil!", "User berhasil dihapus.", "success");
         refetch();
       } catch (err) {
         console.error("Gagal menghapus:", err);
-        alert("Terjadi kesalahan saat menghapus user");
+        Swal.fire("Error", "Terjadi kesalahan saat menghapus user.", "error");
       }
     }
-  };
+  };  
 
   const toggleStatus = async (user: User) => {
-    try {
-      const payload = {
-        role_id: user.roles?.[0]?.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        status: user.status ? 0 : 1,
-      };
-      await updateUserStatus({ id: user.id, payload }).unwrap();
-      alert(`Status user ${user.name} berhasil diperbarui`);
-      refetch();
-    } catch (error) {
-      console.error("Gagal ubah status:", error);
-      alert("Gagal mengubah status");
+    const action = user.status ? "Nonaktifkan" : "Aktifkan";
+
+    const result = await Swal.fire({
+      title: `${action} ${user.name}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: action,
+      cancelButtonText: "Batal",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const payload = {
+          role_id: user.roles?.[0]?.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          status: user.status ? 0 : 1,
+        };
+        await updateUserStatus({ id: user.id, payload }).unwrap();
+        Swal.fire(
+          "Berhasil!",
+          `Status user ${user.name} diperbarui.`,
+          "success"
+        );
+        refetch();
+      } catch (error) {
+        console.error("Gagal ubah status:", error);
+        Swal.fire("Error", "Gagal mengubah status user.", "error");
+      }
     }
-  };
+  };  
 
   useEffect(() => {
     setCurrentPage(1);
@@ -96,7 +122,7 @@ export default function CreateUser() {
   return (
     <main className="p-6 w-full mx-auto">
       <section className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold">Data Pengguna</h2>
             <p className="text-sm text-muted-foreground">
@@ -104,7 +130,7 @@ export default function CreateUser() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <input
               type="text"
               placeholder="Pencarian nama..."
