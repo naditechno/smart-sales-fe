@@ -143,6 +143,9 @@ export default function RolePage() {
                 <thead className="bg-gray-100 dark:bg-neutral-700">
                   <tr>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300">
+                      No
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300">
                       Nama Peran
                     </th>
                     <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300">
@@ -153,15 +156,14 @@ export default function RolePage() {
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredRoles.length === 0 ? (
                     <tr>
-                      <td
-                        className="px-4 py-4 text-center text-gray-500 dark:text-gray-400"
-                      >
+                      <td className="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
                         Tidak ada peran yang ditemukan.
                       </td>
                     </tr>
                   ) : (
-                    filteredRoles.map((role) => (
+                    filteredRoles.map((role, index) => (
                       <tr key={role.id}>
+                        <td className="px-4 py-2">{index + 1}</td>
                         <td className="px-4 py-2 capitalize">{role.name}</td>
                         <td className="px-4 py-2 flex justify-end items-center gap-2">
                           <Button

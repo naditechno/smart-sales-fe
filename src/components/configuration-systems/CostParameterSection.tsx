@@ -127,11 +127,11 @@ export default function CostParameterSection() {
   };
 
   const handleGlobalHistory = () => {
-    router.push("/admin/config-system/riwayat");
+    router.push("/config-system/riwayat");
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 p-4">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
         Pengaturan Parameter (Biaya)
       </h2>

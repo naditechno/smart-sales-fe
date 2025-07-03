@@ -137,6 +137,7 @@ export default function LendingProductPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2">Kisaran Pinjaman</th>
@@ -167,8 +168,11 @@ export default function LendingProductPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((p) => (
+                filtered.map((p, index) => (
                   <tr key={p.id} className="border-t">
+                    <td className="px-4 py-2">
+                      {(page - 1) * paginate + index + 1}
+                    </td>
                     <td className="px-4 py-2">{p.name}</td>
                     <td className="px-4 py-2">{p.description}</td>
                     <td className="px-4 py-2">

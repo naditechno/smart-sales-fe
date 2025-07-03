@@ -1,13 +1,13 @@
-import ConfigSystemPage from "@/components/configuration-systems/ConfigSystemPage";
+import ProspectReviewPage from "@/components/sales-operation-file/propects/prospect-review";
 import { SiteHeader } from "@/components/site-header";
 
 export default function Page() {
   return (
     <>
-      <SiteHeader title="Configuration System" />
+      <SiteHeader title="Prospect Review" />
       <div className="flex flex-1 flex-col">
         <div className="w-full">
-            <ConfigSystemPage/>
+          <ProspectReviewPage />
         </div>
       </div>
     </>

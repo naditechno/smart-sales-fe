@@ -13,6 +13,8 @@ import {
 import { Sales } from "@/types/sales";
 import SalesForm from "../formModal/form-sales";
 import useModal from "@/hooks/use-modal";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function SalesPage() {
   const [page, setPage] = useState(1);
@@ -31,8 +33,10 @@ export default function SalesPage() {
     try {
       if (editingId !== null) {
         await updateSales({ id: editingId, payload: newSales });
+        Swal.fire("Berhasil", "Data sales berhasil diperbarui!", "success");
       } else {
         await createSales(newSales);
+        Swal.fire("Berhasil", "Data sales berhasil ditambahkan!", "success");
       }
       setNewSales({});
       setEditingId(null);
@@ -40,6 +44,7 @@ export default function SalesPage() {
       refetch();
     } catch (err) {
       console.error("Gagal menyimpan data sales:", err);
+      Swal.fire("Gagal", "Terjadi kesalahan saat menyimpan data.", "error");
     }
   };
 
@@ -50,12 +55,24 @@ export default function SalesPage() {
   };
 
   const handleDelete = async (salesId: number) => {
-    if (!confirm("Yakin ingin menghapus sales ini?")) return;
-    try {
-      await deleteSales(salesId);
-      refetch();
-    } catch (err) {
-      console.error("Gagal menghapus sales:", err);
+    const result = await Swal.fire({
+      title: "Yakin ingin menghapus?",
+      text: "Data sales yang dihapus tidak dapat dikembalikan!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteSales(salesId);
+        refetch();
+        Swal.fire("Dihapus!", "Data sales berhasil dihapus.", "success");
+      } catch (err) {
+        console.error("Gagal menghapus sales:", err);
+        Swal.fire("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
+      }
     }
   };
 
@@ -97,10 +114,8 @@ export default function SalesPage() {
             <thead className="bg-muted text-left">
               <tr>
                 <th className="px-4 py-2 font-medium">No</th>
-                <th className="px-4 py-2 font-medium">Sales ID</th>
                 <th className="px-4 py-2 font-medium">Nama Sales</th>
                 <th className="px-4 py-2 font-medium">Email Sales</th>
-                <th className="px-4 py-2 font-medium">Koordinator ID</th>
                 <th className="px-4 py-2 font-medium">Nama koordinator</th>
                 <th className="px-4 py-2 font-medium">Email koordinator</th>
                 <th className="px-4 py-2 font-medium">Aksi</th>
@@ -109,7 +124,7 @@ export default function SalesPage() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="text-center p-4 animate-pulse">
+                  <td colSpan={8} className="text-center p-4 animate-pulse">
                     Memuat data...
                   </td>
                 </tr>
@@ -128,10 +143,8 @@ export default function SalesPage() {
                     <td className="px-4 py-2">
                       {(page - 1) * perPage + idx + 1}
                     </td>
-                    <td className="px-4 py-2">{item.sales_id}</td>
                     <td className="px-4 py-2">{item.sales_name}</td>
                     <td className="px-4 py-2">{item.sales_email}</td>
-                    <td className="px-4 py-2">{item.coordinator_id}</td>
                     <td className="px-4 py-2">{item.coordinator_name}</td>
                     <td className="px-4 py-2">{item.coordinator_email}</td>
                     <td className="px-4 py-2 space-x-2">

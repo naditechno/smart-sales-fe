@@ -97,7 +97,7 @@ export default function RouteOptimizationSection() {
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 p-4">
       <h2 className="text-2xl font-semibold">Optimasi Rute</h2>
 
       <div className="space-y-2">

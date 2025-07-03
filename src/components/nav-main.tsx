@@ -1,8 +1,8 @@
 "use client";
 
-import { IconCirclePlusFilled, IconChevronDown, IconMail, type Icon } from "@tabler/icons-react";
+import { IconChevronDown, type Icon } from "@tabler/icons-react";
 
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -36,7 +36,7 @@ export function NavMain({
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
+        {/* <SidebarMenu>
           <Link href="/admin">
             <SidebarMenuItem className="flex items-center gap-2">
               <SidebarMenuButton
@@ -56,7 +56,7 @@ export function NavMain({
               </Button>
             </SidebarMenuItem>
           </Link>
-        </SidebarMenu>
+        </SidebarMenu> */}
 
         <SidebarMenu>
           {items.map((item) => {

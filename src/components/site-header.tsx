@@ -23,7 +23,7 @@ export function SiteHeader({ title }: { title: string }) {
 
   const route = useRouter()
   const handleNotif = () => {
-    route.push("/admin/notifications")
+    route.push("/notifications")
   }
   
   return (

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { TaskSchedule } from "@/types/taskactivity";
+import { useGetCoordinatorAssignmentsQuery } from "@/services/reference.service";
 
 interface TaskActivityFormProps {
   form: Partial<TaskSchedule>;
@@ -18,6 +19,9 @@ export default function TaskActivityForm({
   onCancel,
   onSubmit,
 }: TaskActivityFormProps) {
+  const { data: assignments = [], isLoading } =
+    useGetCoordinatorAssignmentsQuery();
+
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-2xl space-y-4">
       <div className="flex justify-between items-center">
@@ -30,17 +34,32 @@ export default function TaskActivityForm({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Assignment Select */}
         <div className="flex flex-col gap-y-1 sm:col-span-2">
-          <Label>Assignment ID</Label>
-          <Input
-            type="number"
+          <Label>Assignment</Label>
+          <select
+            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
             value={form.assignment_id || ""}
             onChange={(e) =>
               setForm({ ...form, assignment_id: Number(e.target.value) })
             }
-          />
+            disabled={isLoading}
+          >
+            <option value="">Pilih Assignment</option>
+            {assignments.map((a) => (
+              <option key={a.id} value={a.id}>
+                #{a.id} - {a.assignment_date} -{" "}
+                {a.status === 0
+                  ? "Pending"
+                  : a.status === 1
+                  ? "In Progress"
+                  : "Completed"}
+              </option>
+            ))}
+          </select>
         </div>
 
+        {/* Scheduled At */}
         <div className="flex flex-col gap-y-1 sm:col-span-2">
           <Label>Scheduled At</Label>
           <Input
@@ -54,6 +73,7 @@ export default function TaskActivityForm({
           />
         </div>
 
+        {/* Status */}
         <div className="flex flex-col gap-y-1 sm:col-span-2">
           <Label>Status</Label>
           <select

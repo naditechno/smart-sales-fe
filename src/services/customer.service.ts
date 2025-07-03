@@ -2,9 +2,15 @@ import { apiSlice } from "./base-query";
 import { Customer } from "@/types/customer";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
+interface GetCustomersParams {
+  page: number;
+  paginate: number;
+  search?: string;
+}
+
 export const customerApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // ✅ Get all customers
+    // ✅ Get all customers with optional search
     getCustomers: builder.query<
       {
         data: Customer[];
@@ -13,11 +19,16 @@ export const customerApi = apiSlice.injectEndpoints({
         total: number;
         per_page: number;
       },
-      { page: number; paginate: number }
+      GetCustomersParams
     >({
-      query: ({ page, paginate }) => ({
-        url: `/master/customer?paginate=${paginate}&page=${page}`,
+      query: ({ page, paginate, search = "" }) => ({
+        url: `/master/customer`,
         method: "GET",
+        params: {
+          page,
+          paginate,
+          search,
+        },
       }),
       transformResponse: (response: {
         code: number;
@@ -38,7 +49,6 @@ export const customerApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    // ✅ Get customer by ID
     getCustomerById: builder.query<Customer, number>({
       query: (id) => ({
         url: `/master/customer/${id}`,
@@ -51,7 +61,6 @@ export const customerApi = apiSlice.injectEndpoints({
       }) => response.data,
     }),
 
-    // ✅ Create new customer
     createCustomer: builder.mutation<Customer, Partial<Customer>>({
       query: (payload) => ({
         url: "/master/customer",
@@ -65,7 +74,6 @@ export const customerApi = apiSlice.injectEndpoints({
       }) => response.data,
     }),
 
-    // ✅ Update customer
     updateCustomer: builder.mutation<
       Customer,
       { id: number; payload: Partial<Customer> }
@@ -82,7 +90,6 @@ export const customerApi = apiSlice.injectEndpoints({
       }) => response.data,
     }),
 
-    // ✅ Delete customer
     deleteCustomer: builder.mutation<{ code: number; message: string }, number>(
       {
         query: (id) => ({
@@ -97,7 +104,6 @@ export const customerApi = apiSlice.injectEndpoints({
       }
     ),
 
-    // ✅ Import customer (file upload)
     importCustomer: builder.mutation<{ message: string }, File>({
       query: (file) => {
         const formData = new FormData();
@@ -113,11 +119,7 @@ export const customerApi = apiSlice.injectEndpoints({
         response,
     }),
 
-    // ✅ Export customer (with payload)
-    exportCustomer: builder.mutation<
-      boolean, 
-      Partial<Customer>
-    >({
+    exportCustomer: builder.mutation<boolean, Partial<Customer>>({
       async queryFn(payload, _queryApi, _extraOptions, baseQuery) {
         const response = await baseQuery({
           url: "/master/customer/export",
@@ -129,7 +131,6 @@ export const customerApi = apiSlice.injectEndpoints({
         if (response.error) return { error: response.error };
 
         const blob = response.data as Blob;
-
         const contentType = blob.type;
 
         if (
