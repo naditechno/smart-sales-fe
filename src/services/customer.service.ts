@@ -61,11 +61,11 @@ export const customerApi = apiSlice.injectEndpoints({
       }) => response.data,
     }),
 
-    createCustomer: builder.mutation<Customer, Partial<Customer>>({
-      query: (payload) => ({
+    createCustomer: builder.mutation<Customer, FormData>({
+      query: (formData) => ({
         url: "/master/customer",
         method: "POST",
-        body: payload,
+        body: formData,
       }),
       transformResponse: (response: {
         code: number;
@@ -76,11 +76,11 @@ export const customerApi = apiSlice.injectEndpoints({
 
     updateCustomer: builder.mutation<
       Customer,
-      { id: number; payload: Partial<Customer> }
+      { id: number; payload: FormData }
     >({
       query: ({ id, payload }) => ({
-        url: `/master/customer/${id}`,
-        method: "PUT",
+        url: `/master/customer/${id}?_method=PUT`,
+        method: "POST",
         body: payload,
       }),
       transformResponse: (response: {

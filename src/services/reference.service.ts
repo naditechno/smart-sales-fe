@@ -19,11 +19,25 @@ export const referenceApi = apiSlice.injectEndpoints({
       }) => response.data.data,
     }),
 
-    getAllSales: builder.query<User[], void>({
-      query: () => ({
-        url: "/reference/user/sales",
-        method: "GET",
-      }),
+    getAllSales: builder.query<
+      User[],
+      { search?: string; paginate?: number } 
+    >({
+      query: ({ search, paginate }) => {
+        // Buat URL dengan parameter query secara kondisional
+        const params = new URLSearchParams();
+        if (search) {
+          params.append("search", search);
+        }
+        if (paginate) {
+          params.append("paginate", paginate.toString());
+        }
+        const queryString = params.toString();
+        return {
+          url: `/reference/user/sales${queryString ? `?${queryString}` : ""}`,
+          method: "GET",
+        };
+      },
       transformResponse: (response: {
         code: number;
         message: string;

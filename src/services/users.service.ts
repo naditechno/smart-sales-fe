@@ -153,6 +153,66 @@ export const usersApi = apiSlice.injectEndpoints({
         data: null;
       }) => response,
     }),
+
+    // ✅ 11. getPermissionsByRole
+    getPermissionsByRole: builder.query<string[], number | string>({
+      query: (role) => ({
+        url: `/role/${role}/permissions`,
+        method: "GET",
+      }),
+      transformResponse: (response: {
+        code: number;
+        message: string;
+        data: Record<string, Record<string, boolean>>;
+      }) => {
+        const result: string[] = [];
+
+        for (const group in response.data) {
+          const permissions = response.data[group];
+          for (const perm in permissions) {
+            if (permissions[perm]) {
+              result.push(perm);
+            }
+          }
+        }
+
+        return result;
+      },
+    }),
+
+    // ✅ 12. addPermissionToRole
+    addPermissionToRole: builder.mutation<
+      { code: number; message: string },
+      { role: number | string; permission: string[] }
+    >({
+      query: ({ role, permission }) => ({
+        url: `/role/${role}/permissions/add`,
+        method: "PUT",
+        body: { permission },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: { code: number; message: string }) =>
+        response,
+    }),
+
+    // ✅ 13. revokePermissionFromRole
+    revokePermissionFromRole: builder.mutation<
+      { code: number; message: string },
+      { role: number | string; permission: string[] }
+    >({
+      query: ({ role, permission }) => ({
+        url: `/role/${role}/permissions/revoke`,
+        method: "PUT",
+        body: { permission },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      transformResponse: (response: { code: number; message: string }) =>
+        response,
+    }),
   }),
   overrideExisting: false,
 });
@@ -164,8 +224,11 @@ export const {
   useDeleteUserMutation,
   useUpdateUserStatusMutation,
   useGetRolesQuery,
-  useGetRoleByIdQuery, // NEW
-  useCreateRoleMutation, // NEW
-  useUpdateRoleMutation, // NEW
-  useDeleteRoleMutation, // NEW
+  useGetRoleByIdQuery,
+  useCreateRoleMutation,
+  useUpdateRoleMutation,
+  useDeleteRoleMutation,
+  useGetPermissionsByRoleQuery,
+  useAddPermissionToRoleMutation,
+  useRevokePermissionFromRoleMutation,
 } = usersApi;

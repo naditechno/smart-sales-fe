@@ -7,7 +7,33 @@ export interface FundingProduct {
   interest_rate: number;
   eligibility_criteria: string;
   status: boolean;
+  funding_product_category_id?: number;
+  category_name: string;
+  category_description: string,
+  category_contribution: number;
 }  
+
+export interface FundingProductCategory {
+  id: number;
+  name: string;
+  description: string;
+  contribution: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FundingProductTarget {
+  id: number;
+  funding_product_id?: number;
+  sales_category_id?: number;
+  min_target: number;
+  max_target: number;
+  status: boolean;
+  created_at: string;
+  updated_at: string;
+  funding_product_name: string;
+  sales_category_name: string;
+}
 
 export interface LendingProduct {
   id: number; 

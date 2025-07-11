@@ -1,9 +1,17 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Customer } from "@/types/customer";
+
+import { useGetAllSalesQuery } from "@/services/reference.service";
+import { useGetWilayahKerjaQuery } from "@/services/wilayahkerja.service";
+import { useGetBranchesQuery } from "@/services/cabang.service";
+import { useGetBanksQuery } from "@/services/bank.service";
+import { useGetCabangBankMitrasQuery } from "@/services/cabangbankmitra.service";
+
+import FormPage1 from "../form-large/form-page1";
+import FormPage2 from "../form-large/form-page2";
 
 interface CustomerFormProps {
   form: Partial<Customer>;
@@ -11,6 +19,7 @@ interface CustomerFormProps {
   onCancel: () => void;
   onSubmit: () => void;
   editingId: number | null;
+  isLoading?: boolean;
 }
 
 export default function CustomerForm({
@@ -19,132 +28,169 @@ export default function CustomerForm({
   onCancel,
   onSubmit,
   editingId,
+  isLoading = false,
 }: CustomerFormProps) {
+  // State untuk mengontrol halaman yang aktif
+  const [currentPage, setCurrentPage] = useState<"page1" | "page2">("page1");
+
+  const username = useMemo(() => {
+    if (form.first_name && form.last_name) {
+      return `${form.first_name.toLowerCase()}.${form.last_name.toLowerCase()}`;
+    } else if (form.first_name) {
+      return form.first_name.toLowerCase();
+    }
+    return "";
+  }, [form.first_name, form.last_name]);
+
+  const isEdit = !!editingId;
+
+  const [wilayahKerjaSearch, setWilayahKerjaSearch] = useState("");
+  const [cabangSearch, setCabangSearch] = useState("");
+  const [bankSearch, setBankSearch] = useState("");
+  const [mitraCabangSearch, setMitraCabangSearch] = useState("");
+  const [salesSearch, setSalesSearch] = useState("");
+
+  const {
+    data: wilayahKerjaResponse,
+    isLoading: loadingWilayahKerja,
+    isError: errorWilayahKerja,
+  } = useGetWilayahKerjaQuery({
+    page: 1,
+    search: wilayahKerjaSearch,
+    paginate: 10,
+  });
+  const wilayahKerjaList = wilayahKerjaResponse?.data ?? [];
+
+  const {
+    data: cabangResponse,
+    isLoading: loadingCabang,
+    isError: errorCabang,
+  } = useGetBranchesQuery({ page: 1, search: cabangSearch, paginate: 10 });
+  const cabangList = cabangResponse?.data ?? [];
+
+  const {
+    data: bankResponse,
+    isLoading: loadingBanks,
+    isError: errorBanks,
+  } = useGetBanksQuery({ page: 1, search: bankSearch, paginate: 10 });
+  const bankList = bankResponse?.data ?? [];
+
+  const {
+    data: mitraCabangResponse,
+    isLoading: loadingMitraCabang,
+    isError: errorMitraCabang,
+  } = useGetCabangBankMitrasQuery({
+    page: 1,
+    search: mitraCabangSearch,
+    paginate: 10,
+  });
+  const mitraCabangList = mitraCabangResponse?.data ?? [];
+
+  const {
+    data: salesList = [],
+    isLoading: loadingSales,
+    isError: errorSales,
+  } = useGetAllSalesQuery({ search: salesSearch, paginate: 10 });
+
+  const formatNumber = (value: string | number | null | undefined) => {
+    if (value === null || value === undefined || value === "") return "";
+    const raw =
+      typeof value === "number"
+        ? value
+        : Number(value.toString().replace(/\D/g, ""));
+    if (isNaN(raw)) return "";
+    return raw.toLocaleString("id-ID");
+  };
+
+  const unformatNumber = (formatted: string) => {
+    return Number(formatted.replace(/\./g, ""));
+  };
+
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-2xl space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">
-          {editingId ? "Edit Pelanggan" : "Tambah Pelanggan"}
-        </h2>
-        <Button variant="ghost" onClick={onCancel}>
-          ✕
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-y-1">
-          <Label>Nama Depan</Label>
-          <Input
-            value={form.first_name || ""}
-            onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-          />
+    <div className="p-4">
+      <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">
+            {isEdit ? "Edit Pelanggan" : "Tambah Pelanggan Baru"}
+          </h2>
+          <Button variant="ghost" onClick={onCancel} aria-label="Tutup">
+            ✕
+          </Button>
         </div>
 
-        <div className="flex flex-col gap-y-1">
-          <Label>Nama Belakang</Label>
-          <Input
-            value={form.last_name || ""}
-            onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <label className="block text-sm font-medium">Salutation</label>
-          <select
-            value={form.salutation ?? ""}
-            onChange={(e) => setForm({ ...form, salutation: e.target.value })}
-            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
+        {/* --- Navbar untuk navigasi halaman --- */}
+        <div className="flex border-b border-gray-200 dark:border-zinc-700 mb-4">
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              currentPage === "page1"
+                ? "border-b-2 border-blue-500 text-blue-600 dark:text-blue-400"
+                : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            }`}
+            onClick={() => setCurrentPage("page1")}
           >
-            <option value="">Pilih</option>
-            <option value="MR">MR</option>
-            <option value="MRS">MRS</option>
-            <option value="MS">MS</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          <Label>Email</Label>
-          <Input
-            type="email"
-            value={form.email || ""}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          <Label>Nomor Telepon</Label>
-          <Input
-            value={form.phone || ""}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          />
-        </div>
-
-        <div className="sm:col-span-2 flex flex-col gap-y-1">
-          <Label>Alamat</Label>
-          <Input
-            value={form.address || ""}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
-          />
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          <Label>Kode Pos</Label>
-          <Input
-            value={form.postal_code || ""}
-            onChange={(e) => setForm({ ...form, postal_code: e.target.value })}
-          />
-        </div>
-        {/* Latitude */}
-        <div className="flex flex-col gap-y-1">
-          <label className="block text-sm font-medium">Latitude</label>
-          <input
-            type="number"
-            value={form.latitude ?? ""}
-            onChange={(e) =>
-              setForm({ ...form, latitude: parseFloat(e.target.value) })
-            }
-            className="w-full border rounded-md px-3 py-2 mb-3"
-          />
-        </div>
-
-        {/* Longitude */}
-        <div className="flex flex-col gap-y-1">
-          <label className="block text-sm font-medium">Longitude</label>
-          <input
-            type="number"
-            value={form.longitude ?? ""}
-            onChange={(e) =>
-              setForm({ ...form, longitude: parseFloat(e.target.value) })
-            }
-            className="w-full border rounded-md px-3 py-2 mb-3"
-          />
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          <Label>Status</Label>
-          <select
-            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={
-              form.status === true
-                ? "true"
-                : form.status === false
-                ? "false"
-                : ""
-            }
-            onChange={(e) =>
-              setForm({ ...form, status: e.target.value === "true" })
-            }
+            Informasi Dasar
+          </button>
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              currentPage === "page2"
+                ? "border-b-2 border-blue-500 text-blue-600 dark:text-blue-400"
+                : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            }`}
+            onClick={() => setCurrentPage("page2")}
           >
-            <option value="true">Aktif</option>
-            <option value="false">Tidak Aktif</option>
-          </select>
+            Informasi Pinjaman & Status
+          </button>
         </div>
-      </div>
 
-      <div className="pt-4 flex justify-end gap-2">
-        <Button variant="outline" onClick={onCancel}>
-          Batal
-        </Button>
-        <Button onClick={onSubmit}>Simpan</Button>
+        {/* --- Konten Form Berdasarkan Halaman yang Aktif --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {currentPage === "page1" && (
+            <FormPage1
+              form={form}
+              setForm={setForm}
+              username={username}
+              wilayahKerjaList={wilayahKerjaList}
+              loadingWilayahKerja={loadingWilayahKerja}
+              errorWilayahKerja={errorWilayahKerja}
+              setWilayahKerjaSearch={setWilayahKerjaSearch}
+              cabangList={cabangList}
+              loadingCabang={loadingCabang}
+              errorCabang={errorCabang}
+              setCabangSearch={setCabangSearch}
+              bankList={bankList}
+              loadingBanks={loadingBanks}
+              errorBanks={errorBanks}
+              setBankSearch={setBankSearch}
+              mitraCabangList={mitraCabangList}
+              loadingMitraCabang={loadingMitraCabang}
+              errorMitraCabang={errorMitraCabang}
+              setMitraCabangSearch={setMitraCabangSearch}
+              salesList={salesList}
+              loadingSales={loadingSales}
+              errorSales={errorSales}
+              setSalesSearch={setSalesSearch}
+            />
+          )}
+
+          {currentPage === "page2" && (
+            <FormPage2
+              form={form}
+              setForm={setForm}
+              formatNumber={formatNumber}
+              unformatNumber={unformatNumber}
+            />
+          )}
+        </div>
+
+        {/* --- Tombol Aksi --- */}
+        <div className="pt-4 flex justify-end gap-2 col-span-1 md:col-span-2">
+          <Button variant="outline" onClick={onCancel} disabled={isLoading}>
+            Batal
+          </Button>
+          <Button onClick={onSubmit} disabled={isLoading}>
+            {isLoading ? "Loading..." : isEdit ? "Perbarui" : "Simpan"}
+          </Button>
+        </div>
       </div>
     </div>
   );

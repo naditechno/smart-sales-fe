@@ -12,10 +12,12 @@ export const fundingProductApi = apiSlice.injectEndpoints({
         total: number;
         per_page: number;
       },
-      { page: number; paginate: number }
+      { page: number; paginate: number; search?: string } // ✅ search optional
     >({
-      query: ({ page, paginate }) => ({
-        url: `/product/funding?paginate=${paginate}&page=${page}`,
+      query: ({ page, paginate, search = "" }) => ({
+        url: `/product/funding?paginate=${paginate}&search=${encodeURIComponent(
+          search
+        )}&page=${page}`,
         method: "GET",
       }),
       transformResponse: (response: {

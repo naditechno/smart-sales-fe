@@ -55,6 +55,10 @@ const data = {
           url: "/sales-operation/sales",
         },
         {
+          title: "Sales Target Funding",
+          url: "/sales-operation/sales-target-funding",
+        },
+        {
           title: "Assignment",
           url: "/sales-operation/assignment",
         },
@@ -88,6 +92,10 @@ const data = {
         {
           title: "Funding Product",
           url: "/sales-management/funding-product",
+        },
+        {
+          title: "Funding Product Kategori",
+          url: "/sales-management/funding-product-category",
         },
         {
           title: "Lending Product",
@@ -131,6 +139,26 @@ const data = {
         {
           title: "Sales Category",
           url: "/sales-category",
+        },
+        {
+          title: "Sales Type",
+          url: "/sales-type",
+        },
+        {
+          title: "Wilayah Kerja",
+          url: "/wilayah-kerja",
+        },
+        {
+          title: "Cabang",
+          url: "/cabang",
+        },
+        {
+          title: "Bank",
+          url: "/bank",
+        },
+        {
+          title: "Cabang Bank Mitra",
+          url: "/cabang-bank-mitra",
         },
       ],
     },

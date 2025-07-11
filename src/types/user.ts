@@ -5,6 +5,8 @@ export interface User {
   email: string;
   phone: string;
   status: number;
+  sales_category_id?: number;
+  sales_type_id?: number;
   roles?: { id: number; name: string }[];
 }
 
@@ -16,6 +18,8 @@ export interface CreateUserPayload {
   password: string;
   password_confirmation: string;
   status: number;
+  sales_category_id?: number;
+  sales_type_id?: number;
 }
 
 export interface Role {

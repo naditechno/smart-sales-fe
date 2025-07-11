@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import {
   useDeleteUserMutation,
@@ -6,6 +7,8 @@ import {
   useGetUsersQuery,
   useUpdateUserStatusMutation,
 } from "@/services/users.service";
+import { useGetSalesTypesQuery } from "@/services/master/salestype.service";
+import { useGetSalesCategoriesQuery } from "@/services/master/salescategory.service";
 import FormCreateUser from "@/components/formModal/form-create-user";
 import useModal from "@/hooks/use-modal";
 import {
@@ -19,6 +22,8 @@ import { User } from "@/types/user";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import Swal from "sweetalert2";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 export default function CreateUser() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,12 +50,29 @@ export default function CreateUser() {
   const [deleteUser] = useDeleteUserMutation();
   const [updateUserStatus] = useUpdateUserStatusMutation();
   const { isOpen, openModal, closeModal } = useModal();
+  const { data: salesCategoriesResult } = useGetSalesCategoriesQuery({
+    page: 1,
+    paginate: 9999,
+  });
+  const { data: salesTypesResult } = useGetSalesTypesQuery({
+    page: 1,
+    paginate: 9999,
+  });
+
+  const salesCategories = salesCategoriesResult?.data || [];
+  const salesTypes = salesTypesResult?.data || [];
+
+  const getCategoryName = (id: number | undefined) =>
+    salesCategories.find((c) => c.id === id)?.name || "-";
+
+  const getTypeName = (id: number | undefined) =>
+    salesTypes.find((t) => t.id === id)?.name || "-";
 
   const users: User[] = result?.data?.data || [];
   const totalPages = result?.data?.last_page || 1;
 
   const handleAddUser = () => {
-    setEditingUser(undefined); // reset
+    setEditingUser(undefined);
     openModal();
   };
 
@@ -79,7 +101,7 @@ export default function CreateUser() {
         Swal.fire("Error", "Terjadi kesalahan saat menghapus user.", "error");
       }
     }
-  };  
+  };
 
   const toggleStatus = async (user: User) => {
     const action = user.status ? "Nonaktifkan" : "Aktifkan";
@@ -113,188 +135,182 @@ export default function CreateUser() {
         Swal.fire("Error", "Gagal mengubah status user.", "error");
       }
     }
-  };  
+  };
 
   useEffect(() => {
     setCurrentPage(1);
   }, [search]);
 
+  const filteredUsers = users.filter((u) => {
+    const matchStatus =
+      statusFilter === "" || (statusFilter === "active" ? u.status : !u.status);
+    const matchRole =
+      roleFilter === "" ||
+      (u.roles?.[0]?.name?.toLowerCase() || "") === roleFilter.toLowerCase();
+    return matchStatus && matchRole;
+  });
+
   return (
-    <main className="p-6 w-full mx-auto">
-      <section className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold">Data Pengguna</h2>
-            <p className="text-sm text-muted-foreground">
-              Kelola semua akun pengguna di sistem.
-            </p>
-          </div>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Manajemen Pengguna</h1>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              type="text"
-              placeholder="Pencarian nama..."
-              className="px-4 py-2 border border-gray-300 dark:border-neutral-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+      <div className="flex flex-wrap items-center gap-2 justify-between">
+        <Input
+          placeholder="Cari nama pengguna..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-1/2"
+        />
+        <div className="flex flex-wrap gap-2">
+          <select
+            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">Semua Status</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Tidak Aktif</option>
+          </select>
 
-            <select
-              className="px-3 py-2 border border-gray-300 dark:border-neutral-700 rounded-md text-sm bg-white dark:bg-neutral-800"
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="">Semua Status</option>
-              <option value="active">Aktif</option>
-              <option value="inactive">Nonaktif</option>
-            </select>
+          <select
+            className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+          >
+            <option value="">Semua Peran</option>
+            {roles.map((role) => (
+              <option key={role.id} value={role.name}>
+                {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+              </option>
+            ))}
+          </select>
 
-            <select
-              className="px-3 py-2 border border-gray-300 dark:border-neutral-700 rounded-md text-sm bg-white dark:bg-neutral-800"
-              onChange={(e) => setRoleFilter(e.target.value)}
-            >
-              <option value="">Semua Peran</option>
-              {roles.map((role) => (
-                <option key={role.id} value={role.name}>
-                  {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={handleAddUser}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white rounded-md shadow hover:bg-primary/90 transition"
-            >
-              Tambah Akun
-            </button>
-          </div>
+          <Button onClick={handleAddUser}>+ Tambah Pengguna</Button>
         </div>
+      </div>
 
-        <div className="bg-white dark:bg-neutral-800 shadow rounded overflow-auto">
-          {isLoading ? (
-            <p className="text-center animate-pulse py-6">
-              Memuat data pengguna...
-            </p>
-          ) : isError ? (
-            <p className="text-center py-6">Gagal memuat data!</p>
-          ) : (
-            <>
-              <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-100 dark:bg-neutral-700">
-                  <tr>
-                    {"No Nama Email Telepon Peran Status Aksi"
-                      .split(" ")
-                      .map((h) => (
-                        <th
-                          key={h}
-                          className="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300"
+      <Card>
+        <CardContent className="overflow-x-auto p-0">
+          <table className="w-full text-sm">
+            <thead className="bg-muted text-left">
+              <tr>
+                <th className="px-4 py-2">No</th>
+                <th className="px-4 py-2">Nama</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Telepon</th>
+                <th className="px-4 py-2">Peran</th>
+                <th className="px-4 py-2 whitespace-nowrap">Kategori Sales</th>
+                <th className="px-4 py-2 whitespace-nowrap">Tipe Sales</th>
+                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="text-center p-4 text-muted-foreground"
+                  >
+                    Memuat data pengguna...
+                  </td>
+                </tr>
+              ) : isError ? (
+                <tr>
+                  <td colSpan={9} className="text-center p-4 text-destructive">
+                    Gagal memuat data pengguna.
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers.map((u, index) => (
+                  <tr key={u.id} className="border-t">
+                    <td className="px-4 py-2">
+                      {(currentPage - 1) * usersPerPage + index + 1}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.email}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.phone}</td>
+                    <td className="px-4 py-2 whitespace-nowrap capitalize">
+                      {u.roles?.[0]?.name || "-"}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {getCategoryName(u.sales_category_id)}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {getTypeName(u.sales_type_id)}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      <Badge variant={u.status ? "success" : "destructive"}>
+                        {u.status ? "Aktif" : "Tidak Aktif"}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <Button size="sm" onClick={() => handleEdit(u)}>
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(u)}
                         >
-                          {h}
-                        </th>
-                      ))}
+                          Delete
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700">
+                              <IconDotsVertical className="w-4 h-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {u.status ? (
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() => toggleStatus(u)}
+                              >
+                                Nonaktifkan
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                className="text-green-600"
+                                onClick={() => toggleStatus(u)}
+                              >
+                                Aktifkan
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {users
-                    .filter((u) => {
-                      const matchStatus =
-                        statusFilter === "" ||
-                        (statusFilter === "active" ? u.status : !u.status);
-
-                      const matchRole =
-                        roleFilter === "" ||
-                        (u.roles?.[0]?.name?.toLowerCase() || "") ===
-                          roleFilter.toLowerCase();
-
-                      return matchStatus && matchRole;
-                    })
-                    .map((u, idx) => (
-                      <tr key={u.id}>
-                        <td className="px-4 py-2">
-                          {(currentPage - 1) * usersPerPage + idx + 1}
-                        </td>
-                        <td className="px-4 py-2">{u.name}</td>
-                        <td className="px-4 py-2">{u.email}</td>
-                        <td className="px-4 py-2">{u.phone}</td>
-                        <td className="px-4 py-2 capitalize">
-                          {u.roles?.[0]?.name || "-"}
-                        </td>
-                        <td className="px-4 py-2">
-                          <Badge variant={u.status ? "success" : "destructive"}>
-                            {u.status ? "Aktif" : "Tidak Aktif"}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-2 flex items-center gap-2">
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleEdit(u)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(u)}
-                          >
-                            Delete
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700">
-                                <IconDotsVertical className="w-4 h-4" />
-                              </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {u.status ? (
-                                <DropdownMenuItem
-                                  className="text-red-600"
-                                  onClick={() => toggleStatus(u)}
-                                >
-                                  Nonaktifkan
-                                </DropdownMenuItem>
-                              ) : (
-                                <DropdownMenuItem
-                                  className="text-green-600"
-                                  onClick={() => toggleStatus(u)}
-                                >
-                                  Aktifkan
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-
-              <div className="flex justify-between items-center p-4 bg-neutral-100 dark:bg-neutral-700">
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Halaman {currentPage} dari {totalPages}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 text-sm bg-gray-300 dark:bg-neutral-600 text-black dark:text-white rounded disabled:opacity-50"
-                  >
-                    Sebelumnya
-                  </button>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(p + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 text-sm bg-gray-300 dark:bg-neutral-600 text-black dark:text-white rounded disabled:opacity-50"
-                  >
-                    Selanjutnya
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+        <div className="p-4 flex items-center justify-between gap-2 bg-muted">
+          <div className="text-sm text-muted-foreground">
+            Halaman <strong>{currentPage}</strong> dari{" "}
+            <strong>{totalPages}</strong>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              variant="outline"
+            >
+              Sebelumnya
+            </Button>
+            <Button
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              variant="outline"
+            >
+              Berikutnya
+            </Button>
+          </div>
         </div>
-      </section>
+      </Card>
 
       {isOpen && (
         <FormCreateUser
@@ -303,6 +319,6 @@ export default function CreateUser() {
           initialData={editingUser ?? undefined}
         />
       )}
-    </main>
+    </div>
   );
 }

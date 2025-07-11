@@ -82,8 +82,8 @@ export default function SalesPage() {
 
   const filteredSales = salesData.filter(
     (s) =>
-      s.sales_id.toString().includes(search) ||
-      s.coordinator_id.toString().includes(search)
+      s.sales_name.toLowerCase().includes(search) ||
+      s.coordinator_name.toLowerCase().includes(search)
   );
 
   return (
@@ -92,7 +92,7 @@ export default function SalesPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <Input
-          placeholder="Cari ID sales / coordinator..."
+          placeholder="Cari nama sales / coordinator..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/2"
@@ -114,10 +114,10 @@ export default function SalesPage() {
             <thead className="bg-muted text-left">
               <tr>
                 <th className="px-4 py-2 font-medium">No</th>
-                <th className="px-4 py-2 font-medium">Nama Sales</th>
-                <th className="px-4 py-2 font-medium">Email Sales</th>
-                <th className="px-4 py-2 font-medium">Nama koordinator</th>
-                <th className="px-4 py-2 font-medium">Email koordinator</th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">Nama Sales</th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">Email Sales</th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">Nama koordinator</th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">Email koordinator</th>
                 <th className="px-4 py-2 font-medium">Aksi</th>
               </tr>
             </thead>
@@ -143,10 +143,10 @@ export default function SalesPage() {
                     <td className="px-4 py-2">
                       {(page - 1) * perPage + idx + 1}
                     </td>
-                    <td className="px-4 py-2">{item.sales_name}</td>
-                    <td className="px-4 py-2">{item.sales_email}</td>
-                    <td className="px-4 py-2">{item.coordinator_name}</td>
-                    <td className="px-4 py-2">{item.coordinator_email}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{item.sales_name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{item.sales_email}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{item.coordinator_name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{item.coordinator_email}</td>
                     <td className="px-4 py-2 space-x-2">
                       <Button
                         size="sm"

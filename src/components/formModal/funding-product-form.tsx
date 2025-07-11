@@ -4,12 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FundingProduct } from "@/types/sales-manage";
+import { Textarea } from "../ui/textarea";
+import { Combobox } from "@/components/ui/combo-box";
+import { FundingProductCategory } from "@/types/sales-manage";
 
 interface FundingProductFormProps {
   form: Partial<FundingProduct>;
   setForm: (form: Partial<FundingProduct>) => void;
   onCancel: () => void;
   onSubmit: () => void;
+  categories: FundingProductCategory[];
 }
 
 export default function FundingProductForm({
@@ -17,6 +21,7 @@ export default function FundingProductForm({
   setForm,
   onCancel,
   onSubmit,
+  categories,
 }: FundingProductFormProps) {
   function formatRibuan(value?: string | number): string {
     if (!value) return "";
@@ -26,15 +31,17 @@ export default function FundingProductForm({
         : parseInt(value.replace(/\D/g, "") || "0");
     return number.toLocaleString("id-ID");
   }
-  
+
   function parseRibuanToNumber(value: string): number {
     return parseInt(value.replace(/\D/g, "") || "0");
-  }  
-  
+  }
+
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 w-full max-w-2xl space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Tambah Produk Pendanaan</h2>
+        <h2 className="text-lg font-semibold">
+          {form.id ? "Edit Produk Pendanaan" : "Tambah Produk Pendanaan"}
+        </h2>
         <Button variant="ghost" onClick={onCancel} aria-label="Tutup">
           ✕
         </Button>
@@ -49,7 +56,7 @@ export default function FundingProductForm({
         </div>
         <div className="flex flex-col gap-y-1">
           <Label>Deskripsi</Label>
-          <Input
+          <Textarea
             value={form.description || ""}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
@@ -86,9 +93,15 @@ export default function FundingProductForm({
           <Label>Suku Bunga (%)</Label>
           <Input
             type="number"
+            min={0}
+            step={0.1}
             value={form.interest_rate ?? ""}
             onChange={(e) =>
-              setForm({ ...form, interest_rate: +e.target.value })
+              setForm({
+                ...form,
+                interest_rate:
+                  e.target.value === "" ? undefined : +e.target.value,
+              })
             }
           />
         </div>
@@ -102,10 +115,22 @@ export default function FundingProductForm({
           />
         </div>
         <div className="sm:col-span-2 flex flex-col gap-y-1">
+          <Label>Kategori Produk</Label>
+          <Combobox
+            value={form.funding_product_category_id ?? null}
+            onChange={(id) =>
+              setForm({ ...form, funding_product_category_id: id })
+            }
+            data={categories}
+            placeholder="Pilih Kategori Produk"
+            getOptionLabel={(item) => item.name}
+          />
+        </div>
+        <div className="sm:col-span-2 flex flex-col gap-y-1">
           <Label>Status</Label>
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={form.status ? "false" : "true"}
+            value={form.status ? "true" : "false"}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value === "true" })
             }

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { SalesCategory } from "@/types/salescategory";
+import { Textarea } from "../ui/textarea";
 
 interface SalesCategoryFormProps {
   form: Partial<SalesCategory>;
@@ -42,7 +43,7 @@ export default function SalesCategoryForm({
 
         <div className="flex flex-col gap-y-1 sm:col-span-2">
           <Label>Deskripsi</Label>
-          <Input
+          <Textarea
             value={form.description || ""}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
@@ -52,7 +53,7 @@ export default function SalesCategoryForm({
           <Label>Status</Label>
           <select
             className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800"
-            value={form.status === true ? "false" : "true"}
+            value={form.status === true ? "true" : "false"}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value === "true" })
             }

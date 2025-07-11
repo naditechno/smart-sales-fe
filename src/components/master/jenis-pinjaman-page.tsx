@@ -6,16 +6,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import useModal from "@/hooks/use-modal";
-import SalesCategoryForm from "./formModal/sales-category-form";
+import SalesCategoryForm from "../formModal/sales-category-form";
 import { SalesCategory } from "@/types/salescategory";
 import {
   useGetSalesCategoriesQuery,
   useCreateSalesCategoryMutation,
   useUpdateSalesCategoryMutation,
   useDeleteSalesCategoryMutation,
-} from "@/services/salescategory.service";
+} from "@/services/master/salescategory.service";
 
-export default function SalesCategoryPage() {
+export default function JenisPinjamanPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("semua");
   const [form, setForm] = useState<Partial<SalesCategory>>({});
@@ -83,7 +83,7 @@ export default function SalesCategoryPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Manajemen Kategori Sales</h1>
+      <h1 className="text-2xl font-bold">Jenis Pinjaman</h1>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
         <Input

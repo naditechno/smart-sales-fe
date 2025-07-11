@@ -1,4 +1,4 @@
-import { apiSlice } from "./base-query";
+import { apiSlice } from "../base-query";
 import { SalesCategory } from "@/types/salescategory";
 
 export const salesCategoryApi = apiSlice.injectEndpoints({

@@ -64,10 +64,14 @@ export default function TaskActivityForm({
           <Label>Scheduled At</Label>
           <Input
             type="datetime-local"
-            value={form.scheduled_at ? form.scheduled_at.replace(" ", "T") : ""}
+            value={
+              form.scheduled_at
+                ? form.scheduled_at.replace(" ", "T")
+                : ""
+            }
             onChange={(e) => {
-              const raw = e.target.value; // "2025-07-02T14:00"
-              const formatted = raw.replace("T", " "); // "2025-07-02 14:00"
+              const raw = e.target.value; // "2025-07-06T17:00"
+              const formatted = raw.replace("T", " "); // jadi "2025-07-06 17:00"
               setForm({ ...form, scheduled_at: formatted });
             }}
           />

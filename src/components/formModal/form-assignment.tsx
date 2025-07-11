@@ -149,7 +149,11 @@ export default function AssignmentForm({
           <Label>Tanggal Penugasan</Label>
           <Input
             type="date"
-            value={form.assignment_date ?? ""}
+            value={
+              form.assignment_date
+                ? new Date(form.assignment_date).toISOString().split("T")[0]
+                : ""
+            }
             onChange={(e) =>
               setForm({ ...form, assignment_date: e.target.value })
             }

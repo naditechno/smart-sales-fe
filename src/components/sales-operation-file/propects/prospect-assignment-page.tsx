@@ -30,8 +30,6 @@ export default function ProspectAssignmentPage() {
   const [createProspect] = useCreateProspectMutation();
   const [updateProspect] = useUpdateProspectMutation();
   const [deleteProspect] = useDeleteProspectMutation();
-  // const [approveProspect] = useApproveProspectMutation();
-  // const [rejectProspect] = useRejectProspectMutation();
 
   const [newProspect, setNewProspect] = useState<Partial<Prospect>>({});
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -69,10 +67,9 @@ export default function ProspectAssignmentPage() {
           Swal.fire("Gagal", "Terjadi kesalahan saat menyimpan data.", "error");
         }
 
-        return; // hentikan proses jika error
+        return; 
       }
 
-      // Jika tidak error, tampilkan berhasil
       Swal.fire(
         "Berhasil",
         editingId !== null
@@ -120,24 +117,6 @@ export default function ProspectAssignmentPage() {
       Swal.fire("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
     }
   };  
-
-  // const handleApprove = async (id: number) => {
-  //   try {
-  //     await approveProspect(id);
-  //     refetch();
-  //   } catch (err) {
-  //     console.error("Gagal menyetujui prospek:", err);
-  //   }
-  // };
-
-  // const handleReject = async (id: number) => {
-  //   try {
-  //     await rejectProspect(id);
-  //     refetch();
-  //   } catch (err) {
-  //     console.error("Gagal menolak prospek:", err);
-  //   }
-  // };
 
   const prospectData = data?.data ?? [];
   const lastPage = data?.last_page ?? 1;
@@ -218,6 +197,9 @@ export default function ProspectAssignmentPage() {
                 <th className="px-4 py-2 font-medium">No</th>
                 <th className="px-4 py-2 font-medium">Produk</th>
                 <th className="px-4 py-2 font-medium">Deskripsi</th>
+                <th className="px-4 py-2 font-medium">Nama Koordinator</th>
+                <th className="px-4 py-2 font-medium">Nama Sales</th>
+                <th className="px-4 py-2 font-medium">Nama Customer</th>
                 <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 font-medium">Aksi</th>
               </tr>
@@ -225,13 +207,13 @@ export default function ProspectAssignmentPage() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="text-center p-4 animate-pulse">
+                  <td colSpan={8} className="text-center p-4 animate-pulse">
                     Memuat data...
                   </td>
                 </tr>
               ) : filteredProspects.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center p-4">
+                  <td colSpan={8} className="text-center p-4">
                     Tidak ada prospek.
                   </td>
                 </tr>
@@ -254,6 +236,9 @@ export default function ProspectAssignmentPage() {
                     </td>
 
                     <td className="px-4 py-2">{item.description}</td>
+                    <td className="px-4 py-2">{item.coordinator_name}</td>
+                    <td className="px-4 py-2">{item.sales_name}</td>
+                    <td className="px-4 py-2">{`${item.customer_first_name} ${item.customer_last_name}`}</td>
                     <td className="px-4 py-2">{renderStatus(item.status)}</td>
                     <td className="px-4 py-2 space-x-2 space-y-1">
                       <Button
@@ -263,20 +248,6 @@ export default function ProspectAssignmentPage() {
                       >
                         Edit
                       </Button>
-                      {/* <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleApprove(item.id)}
-                      >
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleReject(item.id)}
-                      >
-                        Reject
-                      </Button> */}
                       <Button
                         size="sm"
                         variant="destructive"

@@ -14,9 +14,12 @@ import {
   useUpdateLendingProductMutation,
   useDeleteLendingProductMutation,
 } from "@/services/product-services/lendingproduct.service";
+import Swal from "sweetalert2";
 
 export default function LendingProductPage() {
-  const [form, setForm] = useState<Partial<LendingProduct>>({});
+  const [form, setForm] = useState<Partial<LendingProduct>>({
+    status: true,
+  });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<"semua" | "aktif" | "tidak">(
@@ -49,8 +52,10 @@ export default function LendingProductPage() {
     try {
       if (editingId !== null) {
         await updateProduct({ id: editingId, payload });
+        Swal.fire("Berhasil!", "Produk berhasil diperbarui.", "success");
       } else {
         await createProduct(payload);
+        Swal.fire("Berhasil!", "Produk berhasil ditambahkan.", "success");
       }
       setForm({});
       setEditingId(null);
@@ -58,8 +63,9 @@ export default function LendingProductPage() {
       refetch();
     } catch (err) {
       console.error("Gagal menyimpan produk:", err);
+      Swal.fire("Gagal!", "Terjadi kesalahan saat menyimpan produk.", "error");
     }
-  };
+  };  
 
   const handleEdit = (product: LendingProduct) => {
     setForm(product);
@@ -68,16 +74,29 @@ export default function LendingProductPage() {
   };
 
   const handleDelete = async (id: number) => {
-    const confirmed = window.confirm("Yakin ingin menghapus produk ini?");
-    if (!confirmed) return;
+    const result = await Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Produk yang dihapus tidak dapat dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await deleteProduct(id);
-      refetch();
+      await refetch();
+      Swal.fire("Terhapus!", "Produk berhasil dihapus.", "success");
     } catch (err) {
       console.error("Gagal menghapus produk:", err);
+      Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus produk.", "error");
     }
   };
+  
 
   const toggleStatus = async (id: number, currentStatus: boolean) => {
     try {
@@ -122,7 +141,7 @@ export default function LendingProductPage() {
           </select>
           <Button
             onClick={() => {
-              setForm({});
+              setForm({ status: true });
               setEditingId(null);
               openModal();
             }}
@@ -140,8 +159,10 @@ export default function LendingProductPage() {
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
-                <th className="px-4 py-2">Kisaran Pinjaman</th>
-                <th className="px-4 py-2">Suku Bunga</th>
+                <th className="px-4 py-2 whitespace-nowrap">
+                  Kisaran Pinjaman
+                </th>
+                <th className="px-4 py-2 whitespace-nowrap">Suku Bunga</th>
                 <th className="px-4 py-2">Ketentuan</th>
                 <th className="px-4 py-2">Kriteria</th>
                 <th className="px-4 py-2">Status</th>
@@ -173,9 +194,13 @@ export default function LendingProductPage() {
                     <td className="px-4 py-2">
                       {(page - 1) * paginate + index + 1}
                     </td>
-                    <td className="px-4 py-2">{p.name}</td>
-                    <td className="px-4 py-2">{p.description}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 whitespace-nowrap">{p.name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {p.description.split(" ").length > 7
+                        ? p.description.split(" ").slice(0, 7).join(" ") + "..."
+                        : p.description}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
                       {new Intl.NumberFormat("id-ID", {
                         style: "currency",
                         currency: "IDR",
@@ -189,9 +214,23 @@ export default function LendingProductPage() {
                       }).format(p.loan_amount_max)}
                     </td>
 
-                    <td className="px-4 py-2">{p.interest_rate}%</td>
-                    <td className="px-4 py-2">{p.repayment_terms}</td>
-                    <td className="px-4 py-2">{p.eligibility_criteria}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {p.interest_rate}%
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {p.repayment_terms.split(" ").length > 7
+                        ? p.repayment_terms.split(" ").slice(0, 7).join(" ") +
+                          "..."
+                        : p.repayment_terms}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {p.eligibility_criteria.split(" ").length > 7
+                        ? p.eligibility_criteria
+                            .split(" ")
+                            .slice(0, 7)
+                            .join(" ") + "..."
+                        : p.eligibility_criteria}
+                    </td>
                     <td className="px-4 py-2">
                       <Badge
                         variant={p.status ? "success" : "destructive"}
