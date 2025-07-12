@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Customer } from "@/types/customer";
 
 import { useGetAllSalesQuery } from "@/services/reference.service";
-import { useGetWilayahKerjaQuery } from "@/services/wilayahkerja.service";
-import { useGetBranchesQuery } from "@/services/cabang.service";
-import { useGetBanksQuery } from "@/services/bank.service";
-import { useGetCabangBankMitrasQuery } from "@/services/cabangbankmitra.service";
+import { useGetWilayahKerjaQuery } from "@/services/master/wilayahkerja.service";
+import { useGetBranchesQuery } from "@/services/master/cabang.service";
+import { useGetBanksQuery } from "@/services/master/bank.service";
+import { useGetCabangBankMitrasQuery } from "@/services/master/cabangbankmitra.service";
 
 import FormPage1 from "../form-large/form-page1";
 import FormPage2 from "../form-large/form-page2";
+import { useSession } from "next-auth/react";
 
 interface CustomerFormProps {
   form: Partial<Customer>;
@@ -32,6 +33,9 @@ export default function CustomerForm({
 }: CustomerFormProps) {
   // State untuk mengontrol halaman yang aktif
   const [currentPage, setCurrentPage] = useState<"page1" | "page2">("page1");
+  const { data: session } = useSession();
+  const role = session?.user?.roles?.[0]?.name || "";
+  const userId = session?.user?.id || 0;
 
   const username = useMemo(() => {
     if (form.first_name && form.last_name) {
@@ -149,6 +153,8 @@ export default function CustomerForm({
               form={form}
               setForm={setForm}
               username={username}
+              role={role}
+              userId={userId}
               wilayahKerjaList={wilayahKerjaList}
               loadingWilayahKerja={loadingWilayahKerja}
               errorWilayahKerja={errorWilayahKerja}

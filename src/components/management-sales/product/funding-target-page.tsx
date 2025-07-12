@@ -16,6 +16,7 @@ import { useGetFundingProductByIdQuery } from "@/services/product-services/fundi
 import { FundingProductTarget } from "@/types/sales-manage";
 import FundingTargetForm from "@/components/formModal/funding-target-form";
 import { Badge } from "@/components/ui/badge";
+import { useSession } from "next-auth/react";
 
 interface TargetFundingPageProps {
   productId: number;
@@ -29,10 +30,12 @@ export default function TargetFundingPage({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const { isOpen, openModal, closeModal } = useModal();
+  const { data: session } = useSession();
+  const roleName = session?.user?.roles?.[0]?.name;
+  const isSales = roleName === "sales";
 
   const { data: fundingProduct } = useGetFundingProductByIdQuery(productId);
 
-  // 🛠️ Perhatikan tambahan funding_product_id di sini
   const { data, isLoading, refetch } = useGetFundingProductTargetsQuery({
     page,
     paginate: 10,
@@ -120,15 +123,17 @@ export default function TargetFundingPage({
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        <Button
-          onClick={() => {
-            setNewTarget({});
-            setEditingId(null);
-            openModal();
-          }}
-        >
-          + Tambah Target
-        </Button>
+        {!isSales && (
+          <Button
+            onClick={() => {
+              setNewTarget({});
+              setEditingId(null);
+              openModal();
+            }}
+          >
+            + Tambah Target
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -141,7 +146,7 @@ export default function TargetFundingPage({
                 <th className="px-4 py-2">Target Min</th>
                 <th className="px-4 py-2">Target Max</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -173,28 +178,32 @@ export default function TargetFundingPage({
                       Rp{target.max_target.toLocaleString("id-ID")}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">
-                      <Badge variant={target.status ? "success" : "destructive"}>
+                      <Badge
+                        variant={target.status ? "success" : "destructive"}
+                      >
                         {target.status ? "Aktif" : "Tidak Aktif"}
                       </Badge>
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleEdit(target)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(target.id)}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
-                    </td>
+                    {!isSales && (
+                      <td className="px-4 py-2">
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleEdit(target)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(target.id)}
+                          >
+                            Hapus
+                          </Button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

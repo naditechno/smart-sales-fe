@@ -9,6 +9,7 @@ import useModal from "@/hooks/use-modal";
 import FundingApplicationForm, {
   FundingApplication,
 } from "@/components/formModal/funding-app-form";
+import { useSession } from "next-auth/react";
 
 export default function FundingApplicationPage() {
   const [applications, setApplications] = useState<FundingApplication[]>([]);
@@ -17,6 +18,9 @@ export default function FundingApplicationPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("semua");
   const { isOpen, openModal, closeModal } = useModal();
+  const { data: session } = useSession();
+  const roleName = session?.user?.roles?.[0]?.name;
+  const isSales = roleName === "sales";
 
   const handleSubmit = () => {
     if (editingId !== null) {
@@ -83,15 +87,17 @@ export default function FundingApplicationPage() {
             <option value="disetujui">Disetujui</option>
             <option value="ditolak">Ditolak</option>
           </select>
-          <Button
-            onClick={() => {
-              setForm({});
-              setEditingId(null);
-              openModal();
-            }}
-          >
-            + Tambah Aplikasi
-          </Button>
+          {!isSales && (
+            <Button
+              onClick={() => {
+                setForm({});
+                setEditingId(null);
+                openModal();
+              }}
+            >
+              + Tambah Aplikasi
+            </Button>
+          )}
         </div>
       </div>
 
@@ -107,7 +113,7 @@ export default function FundingApplicationPage() {
                 <th className="px-4 py-2">Sales</th>
                 <th className="px-4 py-2">Koordinator</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -132,22 +138,24 @@ export default function FundingApplicationPage() {
                       {a.status}
                     </Badge>
                   </td>
-                  <td className="px-4 py-2 space-x-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleEdit(a)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(a.id)}
-                    >
-                      Hapus
-                    </Button>
-                  </td>
+                  {!isSales && (
+                    <td className="px-4 py-2 space-x-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleEdit(a)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(a.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
               {filtered.length === 0 && (

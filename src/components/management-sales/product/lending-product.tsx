@@ -15,6 +15,7 @@ import {
   useDeleteLendingProductMutation,
 } from "@/services/product-services/lendingproduct.service";
 import Swal from "sweetalert2";
+import { useSession } from "next-auth/react";
 
 export default function LendingProductPage() {
   const [form, setForm] = useState<Partial<LendingProduct>>({
@@ -28,6 +29,9 @@ export default function LendingProductPage() {
   const [page, setPage] = useState(1);
   const paginate = 10;
   const { isOpen, openModal, closeModal } = useModal();
+  const { data: session } = useSession();
+  const roleName = session?.user?.roles?.[0]?.name;
+  const isSales = roleName === "sales";
 
   const { data, isLoading, refetch } = useGetLendingProductsQuery({
     page,
@@ -65,7 +69,7 @@ export default function LendingProductPage() {
       console.error("Gagal menyimpan produk:", err);
       Swal.fire("Gagal!", "Terjadi kesalahan saat menyimpan produk.", "error");
     }
-  };  
+  };
 
   const handleEdit = (product: LendingProduct) => {
     setForm(product);
@@ -96,7 +100,6 @@ export default function LendingProductPage() {
       Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus produk.", "error");
     }
   };
-  
 
   const toggleStatus = async (id: number, currentStatus: boolean) => {
     try {
@@ -139,15 +142,17 @@ export default function LendingProductPage() {
             <option value="aktif">Aktif</option>
             <option value="tidak">Tidak Aktif</option>
           </select>
-          <Button
-            onClick={() => {
-              setForm({ status: true });
-              setEditingId(null);
-              openModal();
-            }}
-          >
-            + Tambah Produk
-          </Button>
+          {!isSales && (
+            <Button
+              onClick={() => {
+                setForm({ status: true });
+                setEditingId(null);
+                openModal();
+              }}
+            >
+              + Tambah Produk
+            </Button>
+          )}
         </div>
       </div>
 
@@ -166,7 +171,7 @@ export default function LendingProductPage() {
                 <th className="px-4 py-2">Ketentuan</th>
                 <th className="px-4 py-2">Kriteria</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -235,29 +240,31 @@ export default function LendingProductPage() {
                       <Badge
                         variant={p.status ? "success" : "destructive"}
                         className="cursor-pointer"
-                        onClick={() => toggleStatus(p.id, p.status)}
+                        onClick={() => !isSales && toggleStatus(p.id, p.status)}
                       >
                         {p.status ? "Aktif" : "Tidak Aktif"}
                       </Badge>
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="flex items-center  space-x-2">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleEdit(p)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(p.id)}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
-                    </td>
+                    {!isSales && (
+                      <td className="px-4 py-2">
+                        <div className="flex items-center  space-x-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleEdit(p)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(p.id)}
+                          >
+                            Hapus
+                          </Button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

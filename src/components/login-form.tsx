@@ -31,7 +31,7 @@ export default function LoginForm() {
     setIsLoading(false);
 
     if (res?.ok) {
-      router.push("/dashboard/superadmin");
+      router.push("/dashboard");
     } else {
       setError("Email atau password salah.");
     }

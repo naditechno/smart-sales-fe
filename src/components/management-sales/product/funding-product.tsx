@@ -24,9 +24,13 @@ import {
 import { useGetFundingProductCategoriesQuery } from "@/services/product-services/fundingproductcategory.service";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function FundingProductPage() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const roleName = session?.user?.roles?.[0]?.name;
+  const isSales = roleName === "sales";
 
   const [newProduct, setNewProduct] = useState<Partial<FundingProduct>>({
     status: true,
@@ -174,15 +178,17 @@ export default function FundingProductPage() {
             <option value="tidak">Tidak Aktif</option>
           </select>
 
-          <Button
-            onClick={() => {
-              setNewProduct({ status: true });
-              setEditingProductId(null);
-              openModal();
-            }}
-          >
-            + Tambah Produk
-          </Button>
+          {!isSales && (
+            <Button
+              onClick={() => {
+                setNewProduct({ status: true });
+                setEditingProductId(null);
+                openModal();
+              }}
+            >
+              + Tambah Produk
+            </Button>
+          )}
         </div>
       </div>
 
@@ -265,8 +271,10 @@ export default function FundingProductPage() {
                     <td className="px-4 py-2">
                       <Badge
                         variant={product.status ? "success" : "destructive"}
-                        className="cursor-pointer"
-                        onClick={() => toggleStatus(product.id, product.status)}
+                        className={isSales ? "" : "cursor-pointer"}
+                        onClick={() =>
+                          !isSales && toggleStatus(product.id, product.status)
+                        }
                       >
                         {product.status ? "Aktif" : "Tidak Aktif"}
                       </Badge>
@@ -276,35 +284,41 @@ export default function FundingProductPage() {
                         <Button
                           size="sm"
                           variant="default"
-                          onClick={() => router.push(`/sales-management/funding-product/target/${product.id}`)}
+                          onClick={() =>
+                            router.push(
+                              `/sales-management/funding-product/target/${product.id}`
+                            )
+                          }
                         >
                           Target
                         </Button>
 
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="w-8 h-8"
-                            >
-                              <IconDotsVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleEdit(product)}
-                            >
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDelete(product.id)}
-                              className="text-red-600 focus:text-red-600"
-                            >
-                              Hapus
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {!isSales && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="w-8 h-8"
+                              >
+                                <IconDotsVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => handleEdit(product)}
+                              >
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(product.id)}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                Hapus
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                     </td>
                   </tr>

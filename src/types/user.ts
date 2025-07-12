@@ -7,7 +7,7 @@ export interface User {
   status: number;
   sales_category_id?: number;
   sales_type_id?: number;
-  roles?: { id: number; name: string }[];
+  roles: { id: number; name: string }[];
 }
 
 export interface CreateUserPayload {

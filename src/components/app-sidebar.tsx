@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconDashboard,
   IconDatabase,
@@ -11,12 +11,12 @@ import {
   IconBuildingStore,
   IconUsersGroup,
   IconSettingsCog,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
+import type { Icon } from "@tabler/icons-react";
 
-// import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -25,19 +25,21 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Image from "next/image"
+} from "@/components/ui/sidebar";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 
-const data = {
-  user: {
-    name: "Smart Sales",
-    email: "superadmin@gmail.com",
-    avatar: "/logo-smart-sales.png",
-  },
-  navMain: [
+// Fungsi filter menu berdasarkan role
+function filterNavItemsByRole(role: "superadmin" | "coordinator" | "sales") {
+  const navMain: {
+    title: string;
+    url: string;
+    icon?: Icon;
+    children?: { title: string; url: string }[];
+  }[] = [
     {
       title: "Dashboard",
-      url: "/dashboard/superadmin",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
@@ -50,38 +52,23 @@ const data = {
       url: "/sales-operation",
       icon: IconFileNeutral,
       children: [
-        {
-          title: "Sales",
-          url: "/sales-operation/sales",
-        },
+        { title: "Sales", url: "/sales-operation/sales" },
         {
           title: "Sales Target Funding",
           url: "/sales-operation/sales-target-funding",
         },
-        {
-          title: "Assignment",
-          url: "/sales-operation/assignment",
-        },
-        {
-          title: "Task Schedule",
-          url: "/sales-operation/task-activity",
-        },
+        { title: "Assignment", url: "/sales-operation/assignment" },
+        { title: "Task Schedule", url: "/sales-operation/task-activity" },
         {
           title: "Penugasan Prospect",
           url: "/sales-operation/prospect-assignment",
         },
-        {
-          title: "Prospect Review",
-          url: "/sales-operation/prospect-review",
-        },
+        { title: "Prospect Review", url: "/sales-operation/prospect-review" },
         {
           title: "Prospect Approval",
           url: "/sales-operation/prospect-approval",
         },
-        {
-          title: "Rekonsiliasi",
-          url: "/sales-operation/reconciliation",
-        },
+        { title: "Rekonsiliasi", url: "/sales-operation/reconciliation" },
       ],
     },
     {
@@ -89,18 +76,12 @@ const data = {
       url: "/sales-management/funding-product",
       icon: IconBuildingStore,
       children: [
-        {
-          title: "Funding Product",
-          url: "/sales-management/funding-product",
-        },
+        { title: "Funding Product", url: "/sales-management/funding-product" },
         {
           title: "Funding Product Kategori",
           url: "/sales-management/funding-product-category",
         },
-        {
-          title: "Lending Product",
-          url: "/sales-management/lending-product",
-        },
+        { title: "Lending Product", url: "/sales-management/lending-product" },
         {
           title: "Funding Transaksi",
           url: "/sales-management/funding-transaction",
@@ -121,10 +102,7 @@ const data = {
       url: "/users-management",
       icon: IconUsers,
       children: [
-        {
-          title: "Data Pengguna",
-          url: "/users-management",
-        },
+        { title: "Data Pengguna", url: "/users-management" },
         {
           title: "Roles & Permissions",
           url: "/users-management/roles-permissions",
@@ -136,30 +114,12 @@ const data = {
       url: "/master",
       icon: IconDatabase,
       children: [
-        {
-          title: "Sales Category",
-          url: "/sales-category",
-        },
-        {
-          title: "Sales Type",
-          url: "/sales-type",
-        },
-        {
-          title: "Wilayah Kerja",
-          url: "/wilayah-kerja",
-        },
-        {
-          title: "Cabang",
-          url: "/cabang",
-        },
-        {
-          title: "Bank",
-          url: "/bank",
-        },
-        {
-          title: "Cabang Bank Mitra",
-          url: "/cabang-bank-mitra",
-        },
+        { title: "Sales Category", url: "/sales-category" },
+        { title: "Sales Type", url: "/sales-type" },
+        { title: "Wilayah Kerja", url: "/wilayah-kerja" },
+        { title: "Cabang", url: "/cabang" },
+        { title: "Bank", url: "/bank" },
+        { title: "Cabang Bank Mitra", url: "/cabang-bank-mitra" },
       ],
     },
     {
@@ -167,28 +127,80 @@ const data = {
       url: "/config-system",
       icon: IconSettingsCog,
       children: [
-        {
-          title: "Parameter Biaya",
-          url: "/config-system/param-fee",
-        },
-        {
-          title: "Optimasi Rute",
-          url: "/config-system/optimation-rute",
-        },
+        { title: "Parameter Biaya", url: "/config-system/param-fee" },
+        { title: "Optimasi Rute", url: "/config-system/optimation-rute" },
       ],
     },
-  ],
-  navSecondary: [
+  ];
+
+  if (role === "superadmin") {
+    return navMain;
+  }
+
+  return navMain
+    .map((item) => {
+      const newItem = { ...item };
+
+      if (role === "sales") {
+        if (item.url === "/sales-operation") {
+          newItem.children = (item.children || []).filter(
+            (child) =>
+              child.url !== "/sales-operation/sales" &&
+              child.url !== "/sales-operation/sales-target-funding"
+          );
+        }
+
+        if (item.url === "/sales-management/funding-product") {
+        }
+      }
+
+      const hiddenUrls: Record<"coordinator" | "sales", string[]> = {
+        coordinator: [
+          "/users-management",
+          "/reports",
+          "/master",
+          "/config-system",
+        ],
+        sales: ["/users-management", "/reports", "/master", "/config-system"],
+      };
+
+      if (hiddenUrls[role].includes(item.url)) {
+        return null;
+      }
+
+      return newItem;
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
+}
+
+// Component Sidebar
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+
+  const roleName = session?.user?.roles?.[0]?.name;
+  const role: "superadmin" | "coordinator" | "sales" =
+    roleName === "superadmin"
+      ? "superadmin"
+      : roleName === "coordinator"
+      ? "coordinator"
+      : "sales";
+
+  const navItems = filterNavItemsByRole(role);
+
+  const user = {
+    name: session?.user?.name ?? "Smart Sales",
+    email: session?.user?.email ?? "smart@example.com",
+    avatar: "/logo-smart-sales.png",
+  };
+
+  const navSecondary = [
     {
       title: "Settings",
       url: "/setting",
       icon: IconSettings,
     },
-  ],
-  documents: [],
-};
+  ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -199,7 +211,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <Image src="/logo-smart-sales.png" alt="Smart Sales" width={32} height={32} />
+                <Image
+                  src="/logo-smart-sales.png"
+                  alt="Smart Sales"
+                  width={32}
+                  height={32}
+                />
                 <span className="text-base font-semibold">Smart Sales</span>
               </a>
             </SidebarMenuButton>
@@ -207,13 +224,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} /> */}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navItems} />
+        <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

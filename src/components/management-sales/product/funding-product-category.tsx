@@ -14,6 +14,7 @@ import {
 } from "@/services/product-services/fundingproductcategory.service";
 import { FundingProductCategory } from "@/types/sales-manage";
 import FundingCategoryForm from "@/components/formModal/funding-product-category-form";
+import { useSession } from "next-auth/react";
 
 export default function FundingCategoryPage() {
   const [newCategory, setNewCategory] = useState<
@@ -23,6 +24,9 @@ export default function FundingCategoryPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const { isOpen, openModal, closeModal } = useModal();
+  const { data: session } = useSession();
+  const roleName = session?.user?.roles?.[0]?.name;
+  const isSales = roleName === "sales";
 
   const { data, isLoading, refetch } = useGetFundingProductCategoriesQuery({
     page,
@@ -105,15 +109,17 @@ export default function FundingCategoryPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        <Button
-          onClick={() => {
-            setNewCategory({});
-            setEditingId(null);
-            openModal();
-          }}
-        >
-          + Tambah Kategori
-        </Button>
+        {!isSales && (
+          <Button
+            onClick={() => {
+              setNewCategory({});
+              setEditingId(null);
+              openModal();
+            }}
+          >
+            + Tambah Kategori
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -125,7 +131,7 @@ export default function FundingCategoryPage() {
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2">Kontribusi</th>
-                <th className="px-4 py-2">Aksi</th>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -154,24 +160,28 @@ export default function FundingCategoryPage() {
                     <td className="px-4 py-2 whitespace-nowrap">
                       {cat.contribution}%
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="flex items-center  space-x-2">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleEdit(cat)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(cat.id)}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
-                    </td>
+                    {!isSales && (
+                      <td className="px-4 py-2">
+                        <div className="flex items-center  space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => handleEdit(cat)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDelete(cat.id)}
+                            >
+                              Hapus
+                            </Button>
+                          </div>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
