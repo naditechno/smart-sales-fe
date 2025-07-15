@@ -123,7 +123,7 @@ export default function SalesCategoryPage() {
           </select>
           <Button
             onClick={() => {
-              setForm({status: true});
+              setForm({ status: true });
               setEditingId(null);
               openModal();
             }}
@@ -139,11 +139,11 @@ export default function SalesCategoryPage() {
             <table className="w-full text-sm" suppressHydrationWarning>
               <thead className="bg-muted text-left">
                 <tr>
+                  <th className="px-4 py-2">Aksi</th>
                   <th className="px-4 py-2">No</th>
                   <th className="px-4 py-2">Nama</th>
                   <th className="px-4 py-2">Deskripsi</th>
                   <th className="px-4 py-2">Status</th>
-                  <th className="px-4 py-2">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,21 +160,6 @@ export default function SalesCategoryPage() {
                   <>
                     {filtered.map((c, index) => (
                       <tr key={c.id} className="border-t">
-                        <td className="px-4 py-2">
-                          {(page - 1) * 10 + index + 1}
-                        </td>
-                        <td className="px-4 py-2">{c.name}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">
-                          {c.description.split(" ").length > 7
-                            ? c.description.split(" ").slice(0, 7).join(" ") +
-                              "..."
-                            : c.description}
-                        </td>
-                        <td className="px-4 py-2">
-                          <Badge variant={c.status ? "success" : "destructive"}>
-                            {c.status ? "Aktif" : "Tidak Aktif"}
-                          </Badge>
-                        </td>
                         <td className="px-4 py-2 flex space-x-2">
                           <Button
                             variant="default"
@@ -190,6 +175,21 @@ export default function SalesCategoryPage() {
                           >
                             Hapus
                           </Button>
+                        </td>
+                        <td className="px-4 py-2">
+                          {(page - 1) * 10 + index + 1}
+                        </td>
+                        <td className="px-4 py-2">{c.name}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {c.description.split(" ").length > 7
+                            ? c.description.split(" ").slice(0, 7).join(" ") +
+                              "..."
+                            : c.description}
+                        </td>
+                        <td className="px-4 py-2">
+                          <Badge variant={c.status ? "success" : "destructive"}>
+                            {c.status ? "Aktif" : "Tidak Aktif"}
+                          </Badge>
                         </td>
                       </tr>
                     ))}

@@ -141,12 +141,12 @@ export default function TargetFundingPage({
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Kategori Sales</th>
                 <th className="px-4 py-2">Target Min</th>
                 <th className="px-4 py-2">Target Max</th>
                 <th className="px-4 py-2">Status</th>
-                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -165,25 +165,6 @@ export default function TargetFundingPage({
               ) : (
                 filtered.map((target, i) => (
                   <tr key={target.id} className="border-t">
-                    <td className="px-4 py-2">
-                      {(page - 1) * perPage + i + 1}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {target.sales_category_name}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      Rp{target.min_target.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      Rp{target.max_target.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      <Badge
-                        variant={target.status ? "success" : "destructive"}
-                      >
-                        {target.status ? "Aktif" : "Tidak Aktif"}
-                      </Badge>
-                    </td>
                     {!isSales && (
                       <td className="px-4 py-2">
                         <div className="flex items-center space-x-2">
@@ -204,6 +185,25 @@ export default function TargetFundingPage({
                         </div>
                       </td>
                     )}
+                    <td className="px-4 py-2">
+                      {(page - 1) * perPage + i + 1}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {target.sales_category_name}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      Rp{target.min_target.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      Rp{target.max_target.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      <Badge
+                        variant={target.status ? "success" : "destructive"}
+                      >
+                        {target.status ? "Aktif" : "Tidak Aktif"}
+                      </Badge>
+                    </td>
                   </tr>
                 ))
               )}

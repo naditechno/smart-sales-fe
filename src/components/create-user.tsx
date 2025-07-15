@@ -194,6 +194,7 @@ export default function CreateUser() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">Aksi</th>
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Email</th>
@@ -202,7 +203,6 @@ export default function CreateUser() {
                 <th className="px-4 py-2 whitespace-nowrap">Kategori Sales</th>
                 <th className="px-4 py-2 whitespace-nowrap">Tipe Sales</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -224,26 +224,6 @@ export default function CreateUser() {
               ) : (
                 filteredUsers.map((u, index) => (
                   <tr key={u.id} className="border-t">
-                    <td className="px-4 py-2">
-                      {(currentPage - 1) * usersPerPage + index + 1}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">{u.name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{u.email}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{u.phone}</td>
-                    <td className="px-4 py-2 whitespace-nowrap capitalize">
-                      {u.roles?.[0]?.name || "-"}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {getCategoryName(u.sales_category_id)}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {getTypeName(u.sales_type_id)}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      <Badge variant={u.status ? "success" : "destructive"}>
-                        {u.status ? "Aktif" : "Tidak Aktif"}
-                      </Badge>
-                    </td>
                     <td className="px-4 py-2 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <Button size="sm" onClick={() => handleEdit(u)}>
@@ -281,6 +261,26 @@ export default function CreateUser() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
+                    </td>
+                    <td className="px-4 py-2">
+                      {(currentPage - 1) * usersPerPage + index + 1}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.email}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{u.phone}</td>
+                    <td className="px-4 py-2 whitespace-nowrap capitalize">
+                      {u.roles?.[0]?.name || "-"}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {getCategoryName(u.sales_category_id)}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {getTypeName(u.sales_type_id)}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      <Badge variant={u.status ? "success" : "destructive"}>
+                        {u.status ? "Aktif" : "Tidak Aktif"}
+                      </Badge>
                     </td>
                   </tr>
                 ))

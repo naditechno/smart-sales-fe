@@ -137,12 +137,12 @@ export default function BankPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">Aksi</th>
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Kode</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -159,17 +159,6 @@ export default function BankPage() {
                 <>
                   {filtered.map((b, index) => (
                     <tr key={b.id} className="border-t">
-                      <td className="px-4 py-2">
-                        {(page - 1) * perPage + index + 1}
-                      </td>
-                      <td className="px-4 py-2">{b.code}</td>
-                      <td className="px-4 py-2">{b.name}</td>
-                      <td className="px-4 py-2">{limitWords(b.description)}</td>
-                      <td className="px-4 py-2">
-                        <Badge variant={b.status ? "success" : "destructive"}>
-                          {b.status ? "Aktif" : "Tidak Aktif"}
-                        </Badge>
-                      </td>
                       <td className="px-4 py-2 flex space-x-2">
                         <Button
                           variant="default"
@@ -185,6 +174,17 @@ export default function BankPage() {
                         >
                           Hapus
                         </Button>
+                      </td>
+                      <td className="px-4 py-2">
+                        {(page - 1) * perPage + index + 1}
+                      </td>
+                      <td className="px-4 py-2">{b.code}</td>
+                      <td className="px-4 py-2">{b.name}</td>
+                      <td className="px-4 py-2">{limitWords(b.description)}</td>
+                      <td className="px-4 py-2">
+                        <Badge variant={b.status ? "success" : "destructive"}>
+                          {b.status ? "Aktif" : "Tidak Aktif"}
+                        </Badge>
                       </td>
                     </tr>
                   ))}

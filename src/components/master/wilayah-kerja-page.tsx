@@ -147,12 +147,12 @@ export default function WilayahKerjaPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">Aksi</th>
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Kode</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -169,6 +169,22 @@ export default function WilayahKerjaPage() {
                 <>
                   {filtered.map((item, index) => (
                     <tr key={item.id} className="border-t">
+                      <td className="px-4 py-2 flex space-x-2">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Hapus
+                        </Button>
+                      </td>
                       <td className="px-4 py-2">
                         {(page - 1) * perPage + index + 1}
                       </td>
@@ -185,22 +201,6 @@ export default function WilayahKerjaPage() {
                         >
                           {item.status ? "Aktif" : "Tidak Aktif"}
                         </Badge>
-                      </td>
-                      <td className="px-4 py-2 flex space-x-2">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          Hapus
-                        </Button>
                       </td>
                     </tr>
                   ))}

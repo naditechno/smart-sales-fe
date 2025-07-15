@@ -95,12 +95,12 @@ export default function SalesTargetFundingPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">Aksi</th>
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Koordinator</th>
                 <th className="px-4 py-2">Sales</th>
                 <th className="px-4 py-2">Tanggal</th>
                 <th className="px-4 py-2">Detail Target</th>
-                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +119,20 @@ export default function SalesTargetFundingPage() {
               ) : (
                 targets.map((item, idx) => (
                   <tr key={item.id} className="border-t">
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => handleEdit(item)}>
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(item)}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    </td>
                     <td className="px-4 py-2">
                       {(currentPage - 1) * perPage + idx + 1}
                     </td>
@@ -143,20 +157,6 @@ export default function SalesTargetFundingPage() {
                     </td>
                     <td className="px-4 py-2">
                       <DetailsCell id={item.id} refreshTrigger={refreshId} />
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      <div className="flex gap-2">
-                        <Button size="sm" onClick={() => handleEdit(item)}>
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(item)}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
                     </td>
                   </tr>
                 ))

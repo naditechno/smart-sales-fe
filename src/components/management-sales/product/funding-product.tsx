@@ -197,6 +197,7 @@ export default function FundingProductPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2 font-medium">Aksi</th>
                 <th className="px-4 py-2 font-medium">No</th>
                 <th className="px-4 py-2 font-medium">Nama</th>
                 <th className="px-4 py-2 font-medium">Deskripsi</th>
@@ -207,7 +208,6 @@ export default function FundingProductPage() {
                 <th className="px-4 py-2 font-medium">Kriteria</th>
                 <th className="px-4 py-2 font-medium">Kategori</th>
                 <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -232,6 +232,48 @@ export default function FundingProductPage() {
               ) : (
                 filteredProducts.map((product, idx) => (
                   <tr key={product.id} className="border-t">
+                    <td className="px-4 py-2 space-x-2">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() =>
+                            router.push(
+                              `/sales-management/funding-product/target/${product.id}`
+                            )
+                          }
+                        >
+                          Target
+                        </Button>
+
+                        {!isSales && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="w-8 h-8"
+                              >
+                                <IconDotsVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => handleEdit(product)}
+                              >
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(product.id)}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                Hapus
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-2">
                       {(page - 1) * perPage + idx + 1}
                     </td>
@@ -278,48 +320,6 @@ export default function FundingProductPage() {
                       >
                         {product.status ? "Aktif" : "Tidak Aktif"}
                       </Badge>
-                    </td>
-                    <td className="px-4 py-2 space-x-2">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() =>
-                            router.push(
-                              `/sales-management/funding-product/target/${product.id}`
-                            )
-                          }
-                        >
-                          Target
-                        </Button>
-
-                        {!isSales && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="w-8 h-8"
-                              >
-                                <IconDotsVertical className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => handleEdit(product)}
-                              >
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDelete(product.id)}
-                                className="text-red-600 focus:text-red-600"
-                              >
-                                Hapus
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </div>
                     </td>
                   </tr>
                 ))

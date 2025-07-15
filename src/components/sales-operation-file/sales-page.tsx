@@ -113,12 +113,20 @@ export default function SalesPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
-                <th className="px-4 py-2 font-medium">No</th>
-                <th className="px-4 py-2 font-medium whitespace-nowrap">Nama Sales</th>
-                <th className="px-4 py-2 font-medium whitespace-nowrap">Email Sales</th>
-                <th className="px-4 py-2 font-medium whitespace-nowrap">Nama koordinator</th>
-                <th className="px-4 py-2 font-medium whitespace-nowrap">Email koordinator</th>
                 <th className="px-4 py-2 font-medium">Aksi</th>
+                <th className="px-4 py-2 font-medium">No</th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">
+                  Nama Sales
+                </th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">
+                  Email Sales
+                </th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">
+                  Nama koordinator
+                </th>
+                <th className="px-4 py-2 font-medium whitespace-nowrap">
+                  Email koordinator
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -140,13 +148,6 @@ export default function SalesPage() {
                     key={`${item.sales_id}-${item.coordinator_id}`}
                     className="border-t"
                   >
-                    <td className="px-4 py-2">
-                      {(page - 1) * perPage + idx + 1}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">{item.sales_name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{item.sales_email}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{item.coordinator_name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{item.coordinator_email}</td>
                     <td className="px-4 py-2 space-x-2">
                       <Button
                         size="sm"
@@ -162,6 +163,21 @@ export default function SalesPage() {
                       >
                         Hapus
                       </Button>
+                    </td>
+                    <td className="px-4 py-2">
+                      {(page - 1) * perPage + idx + 1}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {item.sales_name}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {item.sales_email}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {item.coordinator_name}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {item.coordinator_email}
                     </td>
                   </tr>
                 ))

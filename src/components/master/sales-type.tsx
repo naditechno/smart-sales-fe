@@ -138,11 +138,11 @@ export default function SalesTypePage() {
           <table className="w-full text-sm" suppressHydrationWarning>
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">Aksi</th>
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -159,22 +159,6 @@ export default function SalesTypePage() {
                 <>
                   {filtered.map((item, index) => (
                     <tr key={item.id} className="border-t">
-                      <td className="px-4 py-2">
-                        {(page - 1) * 10 + index + 1}
-                      </td>
-                      <td className="px-4 py-2">{item.name}</td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        {item.description.length > 50
-                          ? item.description.slice(0, 50) + "..."
-                          : item.description}
-                      </td>
-                      <td className="px-4 py-2">
-                        <Badge
-                          variant={item.status ? "success" : "destructive"}
-                        >
-                          {item.status ? "Aktif" : "Tidak Aktif"}
-                        </Badge>
-                      </td>
                       <td className="px-4 py-2 flex space-x-2">
                         <Button
                           variant="default"
@@ -190,6 +174,22 @@ export default function SalesTypePage() {
                         >
                           Hapus
                         </Button>
+                      </td>
+                      <td className="px-4 py-2">
+                        {(page - 1) * 10 + index + 1}
+                      </td>
+                      <td className="px-4 py-2">{item.name}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        {item.description.length > 50
+                          ? item.description.slice(0, 50) + "..."
+                          : item.description}
+                      </td>
+                      <td className="px-4 py-2">
+                        <Badge
+                          variant={item.status ? "success" : "destructive"}
+                        >
+                          {item.status ? "Aktif" : "Tidak Aktif"}
+                        </Badge>
                       </td>
                     </tr>
                   ))}

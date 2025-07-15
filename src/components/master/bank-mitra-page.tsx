@@ -143,6 +143,7 @@ export default function BankMitraPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2">Aksi</th>
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Kode</th>
                 <th className="px-4 py-2">Nama</th>
@@ -150,7 +151,6 @@ export default function BankMitraPage() {
                 <th className="px-4 py-2">Cabang</th>
                 <th className="px-4 py-2">Bank</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -167,19 +167,6 @@ export default function BankMitraPage() {
                 <>
                   {filtered.map((c, index) => (
                     <tr key={c.id} className="border-t">
-                      <td className="px-4 py-2">
-                        {(page - 1) * perPage + index + 1}
-                      </td>
-                      <td className="px-4 py-2">{c.code}</td>
-                      <td className="px-4 py-2">{c.name}</td>
-                      <td className="px-4 py-2">{limitWords(c.description)}</td>
-                      <td className="px-4 py-2">{c.cabang_name}</td>
-                      <td className="px-4 py-2">{c.bank_name}</td>
-                      <td className="px-4 py-2">
-                        <Badge variant={c.status ? "success" : "destructive"}>
-                          {c.status ? "Aktif" : "Tidak Aktif"}
-                        </Badge>
-                      </td>
                       <td className="px-4 py-2 flex space-x-2">
                         <Button
                           variant="default"
@@ -195,6 +182,19 @@ export default function BankMitraPage() {
                         >
                           Hapus
                         </Button>
+                      </td>
+                      <td className="px-4 py-2">
+                        {(page - 1) * perPage + index + 1}
+                      </td>
+                      <td className="px-4 py-2">{c.code}</td>
+                      <td className="px-4 py-2">{c.name}</td>
+                      <td className="px-4 py-2">{limitWords(c.description)}</td>
+                      <td className="px-4 py-2">{c.cabang_name}</td>
+                      <td className="px-4 py-2">{c.bank_name}</td>
+                      <td className="px-4 py-2">
+                        <Badge variant={c.status ? "success" : "destructive"}>
+                          {c.status ? "Aktif" : "Tidak Aktif"}
+                        </Badge>
                       </td>
                     </tr>
                   ))}

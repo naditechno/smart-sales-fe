@@ -106,6 +106,7 @@ export default function FundingApplicationPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
                 <th className="px-4 py-2">Pelanggan</th>
                 <th className="px-4 py-2">Produk</th>
                 <th className="px-4 py-2">Jumlah</th>
@@ -113,12 +114,29 @@ export default function FundingApplicationPage() {
                 <th className="px-4 py-2">Sales</th>
                 <th className="px-4 py-2">Koordinator</th>
                 <th className="px-4 py-2">Status</th>
-                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
               {filtered.map((a) => (
                 <tr key={a.id} className="border-t">
+                  {!isSales && (
+                    <td className="px-4 py-2 space-x-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleEdit(a)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(a.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </td>
+                  )}
                   <td className="px-4 py-2">{a.customerName}</td>
                   <td className="px-4 py-2">{a.product}</td>
                   <td className="px-4 py-2">Rp {a.amount.toLocaleString()}</td>
@@ -138,24 +156,6 @@ export default function FundingApplicationPage() {
                       {a.status}
                     </Badge>
                   </td>
-                  {!isSales && (
-                    <td className="px-4 py-2 space-x-2">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => handleEdit(a)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(a.id)}
-                      >
-                        Hapus
-                      </Button>
-                    </td>
-                  )}
                 </tr>
               ))}
               {filtered.length === 0 && (

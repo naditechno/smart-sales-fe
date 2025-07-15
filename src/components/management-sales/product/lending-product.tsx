@@ -161,6 +161,7 @@ export default function LendingProductPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
@@ -171,7 +172,6 @@ export default function LendingProductPage() {
                 <th className="px-4 py-2">Ketentuan</th>
                 <th className="px-4 py-2">Kriteria</th>
                 <th className="px-4 py-2">Status</th>
-                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -196,6 +196,26 @@ export default function LendingProductPage() {
               ) : (
                 filtered.map((p, index) => (
                   <tr key={p.id} className="border-t">
+                    {!isSales && (
+                      <td className="px-4 py-2">
+                        <div className="flex items-center  space-x-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleEdit(p)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(p.id)}
+                          >
+                            Hapus
+                          </Button>
+                        </div>
+                      </td>
+                    )}
                     <td className="px-4 py-2">
                       {(page - 1) * paginate + index + 1}
                     </td>
@@ -245,26 +265,6 @@ export default function LendingProductPage() {
                         {p.status ? "Aktif" : "Tidak Aktif"}
                       </Badge>
                     </td>
-                    {!isSales && (
-                      <td className="px-4 py-2">
-                        <div className="flex items-center  space-x-2">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => handleEdit(p)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDelete(p.id)}
-                          >
-                            Hapus
-                          </Button>
-                        </div>
-                      </td>
-                    )}
                   </tr>
                 ))
               )}

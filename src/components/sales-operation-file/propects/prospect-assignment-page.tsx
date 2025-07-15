@@ -194,6 +194,7 @@ export default function ProspectAssignmentPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2 font-medium">Aksi</th>
                 <th className="px-4 py-2 font-medium">No</th>
                 <th className="px-4 py-2 font-medium">Produk</th>
                 <th className="px-4 py-2 font-medium">Deskripsi</th>
@@ -201,7 +202,6 @@ export default function ProspectAssignmentPage() {
                 <th className="px-4 py-2 font-medium">Nama Sales</th>
                 <th className="px-4 py-2 font-medium">Nama Customer</th>
                 <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -220,6 +220,22 @@ export default function ProspectAssignmentPage() {
               ) : (
                 filteredProspects.map((item, idx) => (
                   <tr key={item.id} className="border-t">
+                    <td className="px-4 py-2 space-x-2 space-y-1">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleEdit(item)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </td>
                     <td className="px-4 py-2">
                       {(page - 1) * perPage + idx + 1}
                     </td>
@@ -240,22 +256,6 @@ export default function ProspectAssignmentPage() {
                     <td className="px-4 py-2">{item.sales_name}</td>
                     <td className="px-4 py-2">{`${item.customer_first_name} ${item.customer_last_name}`}</td>
                     <td className="px-4 py-2">{renderStatus(item.status)}</td>
-                    <td className="px-4 py-2 space-x-2 space-y-1">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Hapus
-                      </Button>
-                    </td>
                   </tr>
                 ))
               )}

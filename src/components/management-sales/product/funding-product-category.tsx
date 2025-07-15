@@ -127,11 +127,11 @@ export default function FundingCategoryPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                {!isSales && <th className="px-4 py-2">Aksi</th>}
                 <th className="px-4 py-2">No</th>
                 <th className="px-4 py-2">Nama</th>
                 <th className="px-4 py-2">Deskripsi</th>
                 <th className="px-4 py-2">Kontribusi</th>
-                {!isSales && <th className="px-4 py-2">Aksi</th>}
               </tr>
             </thead>
             <tbody>
@@ -150,16 +150,6 @@ export default function FundingCategoryPage() {
               ) : (
                 filtered.map((cat, i) => (
                   <tr key={cat.id} className="border-t">
-                    <td className="px-4 py-2">
-                      {(page - 1) * perPage + i + 1}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">{cat.name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {cat.description}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {cat.contribution}%
-                    </td>
                     {!isSales && (
                       <td className="px-4 py-2">
                         <div className="flex items-center  space-x-2">
@@ -182,6 +172,16 @@ export default function FundingCategoryPage() {
                         </div>
                       </td>
                     )}
+                    <td className="px-4 py-2">
+                      {(page - 1) * perPage + i + 1}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">{cat.name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {cat.description}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {cat.contribution}%
+                    </td>
                   </tr>
                 ))
               )}

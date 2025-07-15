@@ -189,6 +189,7 @@ export default function AssignmentPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted text-left">
               <tr>
+                <th className="px-4 py-2 font-medium">Aksi</th>
                 <th className="px-4 py-2 font-medium">No</th>
                 <th className="px-4 py-2 font-medium whitespace-nowrap">
                   Nama Customer
@@ -209,7 +210,6 @@ export default function AssignmentPage() {
                   Tanggal Penugasan
                 </th>
                 <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -228,6 +228,24 @@ export default function AssignmentPage() {
               ) : (
                 filtered.map((item, idx) => (
                   <tr key={idx} className="border-t">
+                    <td className="px-4 py-2 space-x-2">
+                      <div className="flex gap-2 items-center">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    </td>
                     <td className="px-4 py-2">
                       {(page - 1) * perPage + idx + 1}
                     </td>
@@ -274,24 +292,6 @@ export default function AssignmentPage() {
                           Completed
                         </span>
                       )}
-                    </td>
-                    <td className="px-4 py-2 space-x-2">
-                      <div className="flex gap-2 items-center">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          Hapus
-                        </Button>
-                      </div>
                     </td>
                   </tr>
                 ))
