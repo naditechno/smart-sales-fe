@@ -60,7 +60,7 @@ export function Combobox<T extends { id: number }>({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
-        <Command shouldFilter={false}>
+        <Command>
           <CommandInput
             placeholder="Cari..."
             onValueChange={(value) => {
@@ -79,7 +79,7 @@ export function Combobox<T extends { id: number }>({
             {data.map((item) => (
               <CommandItem
                 key={item.id}
-                value={String(item.id)}
+                value={(getOptionLabel ?? defaultOptionLabel)(item)}
                 onSelect={() => {
                   onChange(item.id);
                   setOpen(false);
