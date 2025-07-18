@@ -97,7 +97,7 @@ export default function TablePage() {
     <div className="px-2 space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         {/* Tab Section */}
-        <div className="hidden md:flex gap-2 flex-wrap bg-neutral-300 dark:bg-neutral-800 rounded-full">
+        <div className="hidden lg:flex gap-2 flex-wrap bg-neutral-300 dark:bg-neutral-800 rounded-full">
           {[
             { label: "Outline", active: true },
             { label: "Past Performance", count: 3 },

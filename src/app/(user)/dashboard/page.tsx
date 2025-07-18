@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useSession } from "next-auth/react";
 import TablePage from "@/components/dashboard/table-dashboard";
+import DashboardFronting from "@/components/dashboard/dashboard-fronting";
 
 export default function Page() {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -21,10 +22,7 @@ export default function Page() {
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
             <div className="w-full flex flex-wrap gap-2 items-center justify-between px-4 lg:px-6">
-              <Input
-                placeholder="Cari nama..."
-                className="w-full lg:w-1/2"
-              />
+              <Input placeholder="Cari nama..." className="w-full lg:w-1/2" />
               <div className="flex items-center gap-2">
                 {role === "superadmin" && (
                   <select className="border rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-800">
@@ -48,10 +46,11 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="px-4 lg:px-6">
+            <div className="px-4 lg:px-6 mb-6">
+             <DashboardFronting/>
             </div>
             <div className="px-4 lg:px-6">
-              <TablePage/>
+              <TablePage />
             </div>
           </div>
         </div>
